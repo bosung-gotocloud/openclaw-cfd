@@ -1,0 +1,31 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      topoSetDict;
+}
+
+actions
+(
+    // Step 1: cylinder cellSet 생성
+    {
+        name        cylinderCells;
+        type        cellSet;
+        action      new;
+        source      cylinderToCell;
+        p1          (0.0 0.0 0.0);
+        p2          (0.1 0.0 0.0);
+        radius      0.72009;
+    }
+
+    // Step 2: cellSet -> cellZone 변환
+    {
+        name        actuatorDiskZone;
+        type        cellZoneSet;
+        action      new;
+        source      setToCellZone;
+        set         cylinderCells;
+    }
+)

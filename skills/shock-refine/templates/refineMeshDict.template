@@ -1,0 +1,40 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+|  \\      /  F ield         | OpenFOAM: The CFD Toolbox           |
+|   \\    /   A nd           | www.openfoam.com                                |
+|    \\ \\/     M anipulation  |                                                 |
+\\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       dictionary;
+    location    "system";
+    object      refineMeshDict;
+}
+
+set             shockRefineZone;
+
+coordinateSystem user;
+
+userCoeffs
+{
+    type            cartesian;
+    origin          (0 0 0);
+    e1              (1 0 0);
+    e3              (0 1 0);
+}
+
+directions
+(
+    normal
+);
+
+useHexTopology  true;
+
+geometricCut    false;
+
+writeMesh       true;
+
+// ************************************************************************* //

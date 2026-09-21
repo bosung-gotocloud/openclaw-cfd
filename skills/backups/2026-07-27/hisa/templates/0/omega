@@ -1,0 +1,26 @@
+FoamFile
+{
+ version 2.0;
+ format ascii;
+ class volScalarField;
+ location 0;
+ object omega;
+}
+
+dimensions [0 0 -1 0 0 0 0];
+internalField   uniform @omegaIni@;  // = sqrt(k)/(C_mu^0.25 L)
+
+boundaryField
+{
+  far
+  {
+        type            turbulentMixingLengthFrequencyInlet; // Uses zeroGradient for outflow 
+        mixingLength    @mixingLength@;
+        value           $internalField;
+  }
+  @surfaceName@
+  {
+    type        omegaWallFunction;
+    value       uniform 1e8;
+  }
+}

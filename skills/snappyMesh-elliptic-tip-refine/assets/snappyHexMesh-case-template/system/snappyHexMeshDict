@@ -1,0 +1,136 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+
+castellatedMesh yes;
+snap            yes;
+addLayers       yes;
+
+geometry
+{
+    "MODEL_STL"
+    {
+        type triSurfaceMesh;
+        name MODEL_SURFACE;
+    }
+
+    "FAR_STL"
+    {
+        type triSurfaceMesh;
+        name FAR_SURFACE;
+    }
+
+    "REFINE_STL"
+    {
+        type triSurfaceMesh;
+        name refine_ellipsoid;
+    }
+
+    // TIP_WAKE_LINE_PLACEHOLDER
+}
+
+castellatedMeshControls
+{
+    maxLocalCells  BASE_MAXLOCAL;
+    maxGlobalCells  BASE_MAXGLOBAL;
+    minRefinementCells 0;
+    maxLoadUnbalance 0.5;
+    nCellsBetweenLevels 3;
+    features
+    ();
+    refinementSurfaces
+    {
+        MODEL_SURFACE
+        {
+            patchInfo
+            {
+                type wall;
+            }
+            level MODEL_LEVEL;
+        }
+
+        FAR_SURFACE
+        {
+            patchInfo
+            {
+                type FAR_PATCH_TYPE;
+            }
+            level FAR_LEVEL;
+        }
+    }
+    resolveFeatureAngle 30;
+    allowFreeStandingZoneFaces yes;
+    locationInMesh LOCATION_IN_MESH;
+    refinementRegions
+    {
+        // TIP_WAKE_LINE_REF_PLACEHOLDER
+        refine_ellipsoid
+        {
+            mode REFINE_MODE;
+            levels ((1 REFINE_LEVEL));
+        }
+    }
+}
+
+snapControls
+{
+    nSmoothPatch  0;
+    nSmoothInternal 0;
+    tolerance  3;
+    nSolveIter  30;
+    nRelaxIter  30;
+    nFeatureSnapIter 15;
+    implicitFeatureSnap false;
+    explicitFeatureSnap false;
+    multiRegionFeatureSnap no;
+    concaveAngle 45;
+    minAreaRatio 0.3;
+}
+
+addLayersControls
+{
+    relativeSizes true;
+    thicknessModel totalThickness;
+    layers
+    {
+        MODEL_SURFACE
+        {
+            nSurfaceLayers    BASE_NLAYERS;
+            firstLayerHeight  BASE_FIRSTLAYER;
+            expansionRatio    BASE_EXPANSION_RATIO;
+        }
+    }
+}
+
+meshQualityControls
+{
+    maxNonOrtho         80;
+    maxBoundarySkewness 20;
+    maxInternalSkewness 4;
+    maxConcave          80;
+    minVol              1e-13;
+    minDeterminant      0.001;
+    minArea             -1;
+    minTwist            0.02;
+    minTriangleTwist    -1;
+    minFaceWeight       0.05;
+    minVolRatio         0.01;
+
+    minTetQuality       1e-9;
+    minFlatness         0.5;
+    minFacePyramidVolume 1e-20;
+
+    relaxed
+    {
+        maxNonOrtho     85;
+    }
+
+    nSmoothScale 15;
+    errorReduction 0.75;
+}
+
+mergeTolerance 1e-6;

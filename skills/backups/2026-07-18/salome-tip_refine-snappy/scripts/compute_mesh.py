@@ -1,0 +1,797 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+STAGE 2: Compute mesh for snappyHexMesh workflow.
+Rebuilds geometry fresh from STEP file, computes mesh WITHOUT viscous layers.
+Exports OpenFOAM case with surface STL for snappyHexMesh layer addition.
+Adds refineBox volumetric refinement in SALOME using Netgen local size.
+Uses parallel snappyHexMesh via mpirun (decomposePar + reconstructParMesh).
+"""
+
+import sys
+import os
+import json
+import math
+import time
+import shutil
+import threading
+import glob as glob_mod
+import csv
+import salome
+import GEOM
+import SMESH
+from salome.geom import geomBuilder
+from salome.smesh import smeshBuilder
+
+# Write to both console and log file
+class TeeOutput:
+    def __init__(self, log_path):
+        self.log_file = open(log_path, 'w')
+        self.log_name = os.path.basename(log_path)
+    def write(self, data):
+        try:
+            sys.__stdout__.write(data)
+        except:
+            pass
+        try:
+            self.log_file.write(data)
+            self.log_file.flush()
+        except:
+            pass
+    def flush(self):
+        try:
+            self.log_file.flush()
+        except:
+            pass
+
+_script_name = os.path.splitext(os.path.basename(sys.argv[0]))[0]
+_log_file = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), f"{_script_name}.log")
+sys.stdout = TeeOutput(_log_file)
+
+# Initialize
+salome.salome_init()
+geompy = geomBuilder.New()
+smesh = smeshBuilder.New()
+
+def format_table(headers, rows):
+    """Format data as ASCII table"""
+    col_widths = [len(h) for h in headers]
+    for row in rows:
+        for i, cell in enumerate(row):
+            col_widths[i] = max(col_widths[i], len(str(cell)))
+    lines = []
+    separator = "+" + "+".join("-" * (w + 2) for w in col_widths) + "+"
+    header_line = "|" + "|".join(f" {h:^{col_widths[i]}} " for i, h in enumerate(headers)) + "|"
+    lines.append(separator)
+    lines.append(header_line)
+    lines.append(separator)
+    for row in rows:
+        row_line = "|" + "|".join(f" {str(cell):<{col_widths[i]}} " for i, cell in enumerate(row)) + "|"
+        lines.append(row_line)
+    lines.append(separator)
+    return "\n".join(lines)
+
+# ==============================================================================
+# MESH EXPORT HELPER FUNCTIONS
+# ==============================================================================
+
+class MeshBuffer(object):
+    def __init__(self, mesh, v):
+        i = 0
+        faces, keys = list(), list()
+        fnodes = mesh.GetElemFaceNodes(v, i)
+        while fnodes:
+            faces.append(fnodes)
+            keys.append(tuple(sorted(fnodes)))
+            i += 1
+            fnodes = mesh.GetElemFaceNodes(v, i)
+        self.v, self.faces, self.keys, self.fL = v, faces, keys, i
+    @staticmethod
+    def Key(fnodes): return tuple(sorted(fnodes))
+
+def exportToFoam(mesh, dirname, base_name):
+    if not os.path.exists(dirname): os.makedirs(dirname)
+    volumes = mesh.GetElementsByType(SMESH.VOLUME)
+    smesh_int = smeshBuilder.New()
+    filter_free = smesh_int.GetFilter(SMESH.EDGE, SMESH.FT_FreeFaces)
+    extFaces = set(mesh.GetIdsFromFilter(filter_free))
+    buffers = [MeshBuffer(mesh, v) for v in volumes]
+    nrExtFaces = len(extFaces)
+    nrFaces = int((sum(b.fL for b in buffers) + nrExtFaces) / 2)
+    nrIntFaces = nrFaces - nrExtFaces
+
+    faces, facesSorted = [], {}
+    bcFaces, bcFacesSorted = [], {}
+    grpStartFace, grpNrFaces, grpNames = [], [], []
+    volumeGroups = []
+    ofbcfid = 0
+
+    for gr in mesh.GetGroups():
+        g_type = gr.GetType()
+        if g_type == SMESH.FACE:
+            grpNames.append(gr.GetName())
+            grIds = gr.GetIDs()
+            grpStartFace.append(nrIntFaces + ofbcfid)
+            grpNrFaces.append(len(grIds))
+            for sfid in grIds:
+                fnodes = mesh.GetElemNodes(sfid)
+                key = MeshBuffer.Key(fnodes)
+                bcFaces.append(fnodes)
+                bcFacesSorted[key] = ofbcfid
+                ofbcfid += 1
+        elif g_type == SMESH.VOLUME:
+            volumeGroups.append(gr)
+
+    owner, neighbour = [-1] * nrFaces, [-1] * nrIntFaces
+    offid, ofvid = 0, 0
+    for b in buffers:
+        for fi in range(b.fL):
+            fnodes, key = b.faces[fi], b.keys[fi]
+            if key in facesSorted:
+                neighbour[facesSorted[key]] = ofvid
+            elif key in bcFacesSorted:
+                bcind = bcFacesSorted[key]
+                owner[nrIntFaces + bcind] = ofvid
+                bcFaces[bcind] = fnodes
+            else:
+                faces.append(fnodes)
+                facesSorted[key] = offid
+                owner[offid] = ofvid
+                offid += 1
+        ofvid += 1
+
+    def write_header(f, ftype):
+        f.write("FoamFile\n{\n\tversion 2.0;\n\tformat ascii;\n")
+        f.write(f"\tclass {ftype};\n\tlocation \"{base_name}-constant/polyMesh\";\n\tobject {os.path.basename(f.name)};\n}}\n\n")
+
+    with open(os.path.join(dirname, 'points'), 'w') as f:
+        write_header(f, "vectorField")
+        pts = mesh.GetElementsByType(SMESH.NODE)
+        f.write(f"{len(pts)}\n(\n")
+        for ni in pts: f.write(f"\t({ ' '.join(map(str, mesh.GetNodeXYZ(ni))) })\n")
+        f.write(")\n")
+
+    with open(os.path.join(dirname, 'faces'), 'w') as f:
+        write_header(f, "faceList")
+        f.write(f"{nrFaces}\n(\n")
+        for nodes in faces + bcFaces: f.write(f"\t{len(nodes)}({' '.join(map(str, [p-1 for p in nodes]))})\n")
+        f.write(")\n")
+
+    with open(os.path.join(dirname, 'owner'), 'w') as f:
+        write_header(f, "labelList")
+        f.write(f"{len(owner)}\n(\n" + "\n".join(map(str, owner)) + "\n)\n")
+
+    with open(os.path.join(dirname, 'neighbour'), 'w') as f:
+        write_header(f, "labelList")
+        f.write(f"{len(neighbour)}\n(\n" + "\n".join(map(str, neighbour)) + "\n)\n")
+
+    with open(os.path.join(dirname, 'boundary'), 'w') as f:
+        write_header(f, "polyBoundaryMesh")
+        f.write(f"{len(grpNames)}\n(\n")
+        for i, name in enumerate(grpNames):
+            ptype = "wall" if "surface" in name.lower() else "patch"
+            f.write(f"\t{name}\n\t{{\n\t\ttype {ptype};\n\t\tnFaces {grpNrFaces[i]};\n\t\tstartFace {grpStartFace[i]};\n\t}}\n")
+        f.write(")\n")
+
+    if volumeGroups:
+        s2f = {sa_id: of_id for of_id, sa_id in enumerate(volumes)}
+        with open(os.path.join(dirname, 'cellZones'), 'w') as f:
+            write_header(f, "regIOobject")
+            f.write(f"{len(volumeGroups)}\n(\n")
+            for gr in volumeGroups:
+                f.write(f"\t{gr.GetName()}\n\t{{\n\t\ttype cellZone;\n\t\tcellLabels List<label>\n")
+                ids = gr.GetIDs()
+                f.write(f"\t\t{len(ids)}\n\t\t(\n\t\t\t" + "\n\t\t\t".join(map(str, [s2f[i] for i in ids])) + "\n\t\t);\n\t}\n")
+            f.write(")\n")
+
+
+
+# ==============================================================================
+# snappyHexMesh CASE SETUP
+# ==============================================================================
+
+def setup_snappy_hex_mesh_case(base_dir, base_name, h1, growth, layers, template_dir):
+    """Copy template case and modify snappyHexMeshDict."""
+    case_dir = os.path.join(base_dir, f"{base_name}-case")
+    if os.path.exists(case_dir):
+        shutil.rmtree(case_dir)
+
+    shutil.copytree(template_dir, case_dir)
+
+    # Create triSurface directory
+    stl_dir = os.path.join(case_dir, "constant", "triSurface")
+    if not os.path.exists(stl_dir):
+        os.makedirs(stl_dir)
+
+    # Modify snappyHexMeshDict
+    dict_path = os.path.join(case_dir, "system", "snappyHexMeshDict")
+    with open(dict_path, 'r') as f:
+        content = f.read()
+
+    # Replace filename in geometry
+    old_geom = '"BASENAME_surface.stl"'
+    new_geom = f'"{base_name}_surface.stl"'
+    content = content.replace(old_geom, new_geom)
+
+    # Replace surface name in layers section
+    old_surface = "BASENAME_surface"
+    new_surface = f"{base_name}_surface"
+    content = content.replace(old_surface, new_surface)
+
+    # Update layer parameters (all placeholders from template)
+    content = content.replace("BASENAME_surface", f"{new_surface}")
+    content = content.replace("BASE_FIRSTLAYER", f"{h1:.8f}")
+    content = content.replace("BASE_NLAYERS", str(layers))
+    content = content.replace("BASE_EXPANSION_RATIO", f"{growth}")
+
+    with open(dict_path, 'w') as f:
+        f.write(content)
+
+    # Fix controlDict: writeInterval must be >= 1
+    control_dict_path = os.path.join(case_dir, "system", "controlDict")
+    with open(control_dict_path, 'r') as f:
+        cd_content = f.read()
+    cd_content = cd_content.replace("writeControl    timeStep;", "writeControl    adjustableRunTime;")
+    cd_content = cd_content.replace("writeInterval   0;", "writeInterval   1;")
+    with open(control_dict_path, 'w') as f:
+        f.write(cd_content)
+
+    return case_dir, stl_dir
+
+def export_surface_stl(mesh, group_name, stl_path):
+    """Export surface mesh group faces as STL for snappyHexMesh."""
+    if os.path.exists(stl_path):
+        os.remove(stl_path)
+
+    # Find the group in the mesh
+    smesh_group = None
+    for gr in mesh.GetGroups():
+        if gr.GetName() == group_name:
+            smesh_group = gr
+            break
+
+    if not smesh_group:
+        raise Exception(f"Group '{group_name}' not found in mesh")
+
+    face_ids = smesh_group.GetIDs()
+
+
+    with open(stl_path, 'w') as f:
+        f.write(f"solid {group_name}\n")
+        for fid in face_ids:
+            fnodes = mesh.GetElemNodes(fid)
+            if len(fnodes) >= 3:
+                # Get node coordinates
+                pts = [mesh.GetNodeXYZ(ni) for ni in fnodes[:3]]
+                # Calculate normal
+                v1 = (pts[1][0]-pts[0][0], pts[1][1]-pts[0][1], pts[1][2]-pts[0][2])
+                v2 = (pts[2][0]-pts[0][0], pts[2][1]-pts[0][1], pts[2][2]-pts[0][2])
+                normal = (
+                    v1[1]*v2[2] - v1[2]*v2[1],
+                    v1[2]*v2[0] - v1[0]*v2[2],
+                    v1[0]*v2[1] - v1[1]*v2[0]
+                )
+                length = math.sqrt(normal[0]**2 + normal[1]**2 + normal[2]**2)
+                if length > 0:
+                    normal = (normal[0]/length, normal[1]/length, normal[2]/length)
+                else:
+                    normal = (0, 0, 1)
+                f.write(f"  facet normal {normal[0]} {normal[1]} {normal[2]}\n")
+                f.write("    outer loop\n")
+                for ni in fnodes[:3]:
+                    coord = mesh.GetNodeXYZ(ni)
+                    f.write(f"      vertex {coord[0]} {coord[1]} {coord[2]}\n")
+                f.write("    endloop\n")
+                f.write("  endfacet\n")
+        f.write(f"endsolid {group_name}\n")
+
+    return True
+
+# ==============================================================================
+# WORKFLOW
+# ==============================================================================
+
+def run_compute_mesh():
+    # -------------------------------------------------
+    # 1. Parse Arguments (JSON file)
+    # -------------------------------------------------
+    args_file = None
+    for arg in sys.argv:
+        if arg.endswith('.json'):
+            if ':' in arg:
+                directory, filename = arg.split(':', 1)
+                args_file = os.path.join(directory, filename)
+            else:
+                args_file = os.path.abspath(arg)
+            break
+
+    if not args_file or not os.path.exists(args_file):
+        print("ERROR: Args file not found.")
+        print("Usage: compute_mesh.py <directory>:<args_file.json>")
+        return
+
+    with open(args_file, 'r') as f:
+        args = json.load(f)
+
+    step_path = args['step_path']
+    base_dir = args['base_dir']
+    base_name = args['base_name']
+    xl = args['xl']
+    yl = args['yl']
+    zl = args['zl']
+    h1 = args['h1']
+    layers = args['layers']
+    growth = args['growth']
+    fineness = args['fineness']
+    T = args['T']
+    totalThickness = args.get('totalThickness', T * 0.1)
+    if 'totalThickness' not in args:
+        totalThickness = T * 0.1
+    min_size = args.get('min_size', None)
+    surf_size = args.get('surf_size', None)
+    max_size = args.get('max_size', None)
+    refine_local_size = args.get('refine_local_size', None)
+    cube_dx = args['cube_dx']
+    cube_dy = args['cube_dy']
+    cube_dz = args['cube_dz']
+    
+    # Refine Box params
+    refine_dx = args.get('refine_dx', 0.5 * cube_dx)
+    refine_dy = args.get('refine_dy', 2 * yl)
+    refine_dz = args.get('refine_dz', 2 * zl)
+    refine_cx = args.get('refine_cx', 0)
+    refine_cy = args.get('refine_cy', 0)
+    refine_cz = args.get('refine_cz', 0)
+    refine_tx = args.get('refine_tx', 0)
+    refine_ty = args.get('refine_ty', 0)
+    refine_tz = args.get('refine_tz', 0)
+    
+    # Tip Wake params (optional - only populated if tip CSV was found)
+    tip_csv_path = args.get('tip_csv_path', None)
+    tip_points_count = args.get('tip_points_count', 0)
+    tip_wake_lines = args.get('tip_wake_lines', [])
+    tip_wake_refine_size = args.get('tip_wake_refine_size', None)
+
+    # Template directory for snappyHexMesh case
+    # Hardcoded path to this skill's assets
+    template_dir = "/home/bosung/.openclaw/workspace/skills/salome-tip_refine-snappy/assets/snappyHexMesh-case-template"
+
+    setup_hdf = os.path.join(base_dir, f"{base_name}_mesh_setup.hdf")
+    mesh_hdf = os.path.join(base_dir, f"{base_name}_mesh.hdf")
+
+    # -------------------------------------------------
+    # 2. Show Parameters
+    # -------------------------------------------------
+    print("\n" + "="*60)
+    print(f"STAGE 2: MESH COMPUTATION (snappyHexMesh) - {base_name}")
+    print("="*60)
+
+    print(f"\n[Mesh Parameters - User Input]")
+    user_headers = ["Parameter", "Value", "Description"]
+    user_rows = [
+        ["h1", f"{h1:.6f} m", "First cell height (for snappyHexMesh)"],
+        ["layers", layers, "Boundary layer count (for snappyHexMesh)"],
+        ["growth", f"{growth:.4f}", "BL growth rate (for snappyHexMesh)"],
+        ["fineness", fineness, "2=mod / 3=fine / 4=vfine"]
+    ]
+    print(format_table(user_headers, user_rows))
+
+    # BL thickness (display only, not used for sizing)
+    T = h1 * (math.pow(growth, layers) - 1) / (growth - 1)
+
+    print(f"\n[Boundary Layer Thickness (display only)]")
+    bl_headers = ["Parameter", "Value", "Formula"]
+    bl_rows = [
+        ["h1", f"{h1:.6f} m", "First layer height"],
+        ["layers", layers, "Number of layers"],
+        ["growth", f"{growth:.4f}", "Growth rate"],
+        ["T (total)", f"{T:.6f} m", "h1*(growth^layers-1)/(growth-1) (display only)"],
+    ]
+    print(format_table(bl_headers, bl_rows))
+
+    # Refine local size (read from JSON, no calculation)
+    refine_local_size = args.get('refine_local_size', surf_size * 2)
+
+    print(f"\n[Mesh Parameters - Derived]")
+    derived_headers = ["Parameter", "Value", "Description"]
+    derived_rows = [
+        ["max_size", f"{max_size:.6f} m", "xl / 5 (coarsest cell)"],
+        ["surf_size", f"{surf_size:.6f} m", "xl * 0.005 (surface cell size)"],
+        ["min_size", f"{min_size:.6f} m", "surf_size / 4"],
+        ["refine_local_size", f"{refine_local_size:.6f} m", "max_size / 4 (refine box local size)"],
+        ["refineBox_dim", f"{refine_dx:.4f} x {refine_dy:.4f} x {refine_dz:.4f}", "RefineBox dimensions (m)"],
+        ["refineBox_center", f"({refine_cx:.2f}, {refine_cy:.2f}, {refine_cz:.2f})", "RefineBox center (m)"]
+    ]
+    if tip_wake_lines:
+        derived_rows.append(["tip_wake_lines", len(tip_wake_lines), "Lines from tips to wake"])
+        derived_rows.append(["tip_refine_size", f"{tip_wake_refine_size:.6f} m", "Wake line local size (Step 5: surf_size)"])
+    print(format_table(derived_headers, derived_rows))
+    
+    # Refine Box info
+    print(f"\n[Refine Box (wake capture)]")
+    print(f"  Size: {refine_dx:.4f} x {refine_dy:.4f} x {refine_dz:.4f} m")
+    print(f"  Center: ({refine_cx:.2f}, {refine_cy:.2f}, {refine_cz:.2f})")
+    print(f"  Min corner: ({refine_tx:.2f}, {refine_ty:.2f}, {refine_tz:.2f})")
+    print(f"  Netgen local size: {refine_local_size:.6f} m (= max_size / 4)")
+
+    # -------------------------------------------------
+    # 3. Rebuild Geometry (fresh from STEP)
+    # -------------------------------------------------
+    print("\n" + "-"*60)
+    print("REBUILDING GEOMETRY FROM STEP FILE...")
+    print("-"*60)
+
+    # -------------------------------------------------
+    # 3b. Create Refine Box in SALOME FIRST (before domain cut)
+    # -------------------------------------------------
+    print("\n" + "-"*60)
+    print("CREATING REFINE BOX IN SALOME (before domain cut)...")
+    print("-"*60)
+
+    # SALOME cube is always created at (0,0,0) as min corner
+    raw_refine_box = geompy.MakeBoxDXDYDZ(refine_dx, refine_dy, refine_dz)
+    geompy.addToStudy(raw_refine_box, "RefineBox_Raw")
+
+    # Translate to position using calculate_mesh_params.py tx/ty/tz
+    # Translate amounts: (cx - 1.25*xl), (cy - yl), (cz - zl)
+    refined_refine_box = geompy.MakeTranslation(raw_refine_box, refine_tx, refine_ty, refine_tz)
+    geompy.addToStudy(refined_refine_box, "RefineBox")
+    
+    # Get bounding box for group identification
+    rb_xmin, rb_xmax, rb_ymin, rb_ymax, rb_zmin, rb_zmax = geompy.BoundingBox(refined_refine_box)
+    rb_cx = (rb_xmin + rb_xmax) / 2
+    rb_cy = (rb_ymin + rb_ymax) / 2
+    rb_cz = (rb_zmin + rb_zmax) / 2
+    print(f"  > RefineBox size: {refine_dx:.4f} x {refine_dy:.4f} x {refine_dz:.4f}")
+    print(f"  > RefineBox center: ({rb_cx:.2f}, {rb_cy:.2f}, {rb_cz:.2f})")
+    print(f"  > Translate: ({refine_tx:.2f}, {refine_ty:.2f}, {refine_tz:.2f})")
+
+    # --- Wake Lines from Tip Points (before domain cut, so they won't intersect cut faces) ---
+    wake_line_objects = []  # Store SALOME line objects for local size application
+    if tip_wake_lines:
+        print(f"\n  Creating {len(tip_wake_lines)} tip wake lines...")
+        for i, (x1, y1, z1, x2, y2, z2) in enumerate(tip_wake_lines):
+            p1 = geompy.MakeVertex(x1, y1, z1)
+            geompy.addToStudy(p1, f"WakeLine_{i}_P1")
+            p2 = geompy.MakeVertex(x2, y2, z2)
+            geompy.addToStudy(p2, f"WakeLine_{i}_P2")
+            wake_line = geompy.MakeEdge(p1, p2)
+            geompy.addToStudy(wake_line, f"WakeLine_{i}")
+            wake_line_objects.append(wake_line)
+            print(f"    Line {i+1}: ({x1:.4f}, {y1:.4f}, {z1:.4f}) -> ({x2:.4f}, {y2:.4f}, {z2:.4f})")
+        print(f"  > Created {len(wake_line_objects)} wake lines")
+    else:
+        print(f"\n  No tip wake lines (tip CSV not found)")
+
+    # -------------------------------------------------
+    # 3. Rebuild Geometry (fresh from STEP) - AFTER refine box and wake lines
+    # -------------------------------------------------
+    print("\n" + "-"*60)
+    print("REBUILDING GEOMETRY FROM STEP FILE...")
+    print("-"*60)
+
+    imported_shape = geompy.ImportSTEP(step_path)
+    geompy.addToStudy(imported_shape, "01_Imported_STEP")
+
+    x_min, x_max, y_min, y_max, z_min, z_max = geompy.BoundingBox(imported_shape)
+    cx, cy, cz = (x_min + x_max) / 2, (y_min + y_max) / 2, (z_min + z_max) / 2
+
+    try:
+        tool_shape = geompy.MakeSolid([imported_shape])
+        geompy.addToStudy(tool_shape, "02_Tool_Solid")
+    except:
+        tool_shape = imported_shape
+
+    cube = geompy.MakeBoxDXDYDZ(cube_dx, cube_dy, cube_dz)
+    geompy.addToStudy(cube, "03_Raw_Cube")
+
+    tx, ty, tz = cx - 2.5 * xl, cy - 2.5 * yl, cz - 5.0 * zl
+    moved_cube = geompy.MakeTranslation(cube, tx, ty, tz)
+    geompy.addToStudy(moved_cube, "04_Farfield_Box")
+
+    c_xmin, c_xmax, c_ymin, c_ymax, c_zmin, c_zmax = geompy.BoundingBox(moved_cube)
+
+    try:
+        domain = geompy.MakeCut(moved_cube, tool_shape)
+        op_type = "Cut"
+    except:
+        domain = geompy.MakePartition([moved_cube], [tool_shape])
+        op_type = "Partition"
+
+    geompy.addToStudy(domain, f"05_{base_name}_domain")
+
+    # Reduce mesh complexity: use ComputeTolerance to merge close faces
+    try:
+        domain_clean = geompy.ComputeTolerance(domain, 0.001)
+        geompy.addToStudy(domain_clean, f"05_{base_name}_domain_clean")
+        domain = domain_clean
+        geompy.Display(domain)
+    except:
+        pass  # Keep original domain if ComputeTolerance fails
+
+    # Identify far and model faces
+    all_faces = geompy.SubShapeAll(domain, geompy.ShapeType["FACE"])
+    tol = 1e-4
+    far_faces, model_faces = [], []
+
+    for face in all_faces:
+        fb = geompy.BoundingBox(face)
+        is_far = any(abs(fb[i] - [c_xmin, c_xmax, c_ymin, c_ymax, c_zmin, c_zmax][i]) < tol for i in range(6))
+        if is_far: far_faces.append(face)
+        else: model_faces.append(face)
+
+    group_far = geompy.CreateGroup(domain, geompy.ShapeType["FACE"])
+    geompy.UnionList(group_far, far_faces)
+    geompy.addToStudyInFather(domain, group_far, "far")
+
+    group_model = geompy.CreateGroup(domain, geompy.ShapeType["FACE"])
+    geompy.UnionList(group_model, model_faces)
+    geompy.addToStudyInFather(domain, group_model, f"{base_name}_surface")
+
+    print(f"  > Boolean Operation: {op_type} Completed")
+    print(f"  > Far faces: {len(far_faces)}, Model faces: {len(model_faces)}")
+
+    # --- Refine Box volume group for Netgen local size ---
+    refine_box_volume_group = geompy.CreateGroup(refined_refine_box, geompy.ShapeType["SOLID"])
+    refine_box_solids = geompy.SubShapeAll(refined_refine_box, geompy.ShapeType["SOLID"])
+    if refine_box_solids:
+        geompy.UnionList(refine_box_volume_group, refine_box_solids)
+    geompy.addToStudyInFather(refined_refine_box, refine_box_volume_group, "refineBox_volume")
+    print(f"  > RefineBox volume group: 'refineBox_volume'")
+    # -------------------------------------------------
+    print("\n" + "="*60)
+    print("STAGE 3: SETUP snappyHexMesh CASE")
+    print("="*60)
+
+    case_dir, stl_dir = setup_snappy_hex_mesh_case(base_dir, base_name, h1, growth, layers, template_dir)
+    print(f"  > Copied template case to: {case_dir}")
+
+    # ---- Mesh Setup: create mesh_setup.hdf first (for manual tuning) ----
+    # Step 1: Create full mesh setup HDF for user to manually adjust in SALOME GUI
+    # Step 2: Load mesh_setup.hdf and compute (for automated run)
+    # ---- Mesh Setup & Computation (NO VISCOUS LAYERS) ----
+    print("\n" + "="*60)
+    print("STAGE 4: MESH SETUP & COMPUTATION (no viscous layers)")
+    print("="*60)
+
+    print("\n  Setting up mesh parameters...")
+    mesh = smesh.Mesh(domain, f"{base_name}_mesh")
+    netgen = mesh.Tetrahedron(algo=smeshBuilder.NETGEN_1D2D3D)
+
+    params = netgen.Parameters()
+    params.SetNbThreads(8)
+    params.SetMaxSize(max_size)
+    params.SetMinSize(min_size)
+    params.SetLocalSizeOnShape(group_model, surf_size)
+    params.SetUseSurfaceCurvature(1)
+    params.SetFineness(fineness)
+    # NOTE: SetOptimize / SetOptimize2D may not be available in all SALOME versions
+    # Enable if your SALOME supports it:
+    # params.SetOptimize(1)
+    # params.SetOptimize2D(1)
+    print("  > Surface curvature: ENABLED")
+
+    # Netgen local size will be applied to the existing 'refineBox_volume' group
+    # (created in section 3b above) — do NOT recreate it here.
+    # NO viscous layers configured - this is the key difference from original
+    print("  > Viscous layers: DISABLED (for snappyHexMesh)")
+
+    print("  Defining mesh groups...")
+    mesh.GroupOnGeom(group_far, 'far', SMESH.FACE)
+    mesh.GroupOnGeom(group_model, f'{base_name}_surface', SMESH.FACE)
+    
+    # Apply Netgen local size to refineBox_volume group (already exists from section 3b)
+    print("  Applying Netgen local size to refineBox volume group: {:.6f} m".format(refine_local_size))
+    netgen.SetLocalSizeOnShape(refine_box_volume_group, refine_local_size)
+
+    # Apply local size to wake lines (if tip points CSV was found)
+    if wake_line_objects:
+        print(f"  Applying Netgen local size to {len(wake_line_objects)} wake lines: {tip_wake_refine_size:.6f} m")
+        for wake_line in wake_line_objects:
+            netgen.SetLocalSizeOnShape(wake_line, tip_wake_refine_size)
+        print(f"  > Wake line local size applied successfully")
+
+    salome.myStudy.SaveAs(setup_hdf, False, False)
+    print(f"  > Mesh Setup Saved: {os.path.basename(setup_hdf)}")
+
+    # ---- Mesh Computation (no timeout) ----
+    print("\n  Computing mesh. . .")
+    sys.stdout.flush()
+    sys.stderr.flush()
+
+    start_time = time.time()
+    success = mesh.Compute()
+    duration = time.time() - start_time
+    
+    if not success and success is not None:
+        print(f"\n  mesh.Compute() returned False")
+        print(f"  NbVolumes: {mesh.NbVolumes()}, NbFaces: {mesh.NbFaces()}, NbEdges: {mesh.NbEdges()}")
+        for gr in mesh.GetGroups():
+            print(f"  Group: {gr.GetName()} type={gr.GetType()} nElements={gr.GetNumberOfElements()}")
+        # Try to get mesh status
+        try:
+            status = mesh.GetStatus()
+            print(f"  GetStatus: {status}")
+        except:
+            pass
+        # Get computed algorithm details
+        try:
+            algo = mesh.GetComputed()
+            print(f"  GetComputed: {algo}")
+        except:
+            pass
+
+    if success:
+        print(f"\n\n[Computation Statistics]")
+        print(f"  Time Taken: {duration:.2f} seconds")
+        print(f"  Volumes:    {mesh.NbVolumes()}")
+        print(f"  Faces:      {mesh.NbFaces()}")
+        print(f"  Edges:      {mesh.NbEdges()}")
+
+        salome.myStudy.SaveAs(mesh_hdf, False, False)
+        print(f"\n  > Mesh Saved: {os.path.basename(mesh_hdf)}")
+
+        # ---- Export STL surface for snappyHexMesh ----
+        stl_path = os.path.join(stl_dir, f"{base_name}_surface.stl")
+        surface_group_name = f"{base_name}_surface"
+        print(f"\n  > Exporting surface STL for snappyHexMesh...")
+        try:
+            export_surface_stl(mesh, surface_group_name, stl_path)
+            print(f"  > Surface STL: {stl_path}")
+        except Exception as e:
+            print(f"  > STL EXPORT ERROR: {e}")
+
+        # ---- Export to OpenFOAM case ----
+        foam_out = os.path.join(case_dir, "constant", "polyMesh")
+        print(f"\n  > Exporting to OpenFOAM case polyMesh...")
+        try:
+            exportToFoam(mesh, foam_out, base_name)
+            print(f"  > Export Complete: {foam_out}")
+        except Exception as e:
+            print(f"  > exportToFoam ERROR: {e}")
+
+
+        # ==============================================
+        # PARALLEL snappyHexMesh via mpirun
+        # ==============================================
+
+        # Get num_procs from system (physical cores, no HyperThreading)
+        import subprocess
+        cores_result = subprocess.run(
+            "lscpu | grep '^Core(s) per socket:' | awk '{{print $NF}}'" \
+            " && lscpu | grep '^Socket(s):' | awk '{{print $NF}}'",
+            shell=True, capture_output=True, text=True
+        )
+        cores_per_socket = int(cores_result.stdout.strip().split('\n')[0].strip())
+        sockets = int(cores_result.stdout.strip().split('\n')[1].strip())
+        num_procs = cores_per_socket * sockets
+        if num_procs < 2:
+            num_procs = 2
+
+        print(f"\n{'='*60}")
+        print(f"  Setting up decomposeParDict...")
+        # Create decomposeParDict
+        decomp_dict = os.path.join(case_dir, "system", "decomposeParDict")
+        with open(decomp_dict, 'w') as df:
+            df.write("""FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      decomposePar;
+}
+
+method        scotch;
+numberOfSubdomains   %d;
+coeffs
+{
+    n (%d 1 1);
+}
+""" % (num_procs, num_procs))
+        print(f"  > decomposeParDict created: {num_procs} subdomains")
+
+        print(f"\n{'='*60}")
+        print(f"  Running decomposePar...")
+
+        decomp_cmd = f"bash -c 'source /opt/OpenFOAM/OpenFOAM-v2512/etc/bashrc 2>/dev/null && cd {case_dir} && decomposePar -force'"
+        ret = os.system(decomp_cmd)
+        if ret != 0:
+            print(f"  ERROR: decomposePar failed (exit {ret})")
+            print(f"  Log saved to: {decomp_log}")
+            sys.exit(1)
+        print(f"  > decomposePar completed successfully")
+
+        # ---- Run snappyHexMesh in parallel via mpirun ----
+        print(f"  Running snappyHexMesh parallel ({num_procs} procs)...")
+        log_file = os.path.join(case_dir, "log.snappyHexMesh")
+        run_cmd = (
+            f"bash -c 'source /opt/OpenFOAM/OpenFOAM-v2512/etc/bashrc 2>/dev/null && "
+            f"cd {case_dir} && mpirun --oversubscribe -np {num_procs} snappyHexMesh -parallel 2>&1 | tee {log_file}'"
+        )
+        ret = os.system(run_cmd)
+        if ret != 0:
+            print(f"\n  ERROR: snappyHexMesh failed (exit {ret})")
+            print(f"  Log saved to: {log_file}")
+            sys.exit(1)
+        else:
+            print(f"  > snappyHexMesh completed successfully")
+            print(f"  > Log: {log_file}")
+
+        # ---- Run reconstructParMesh ----
+        print(f"  Running reconstructParMesh...")
+        log_file_recon = os.path.join(case_dir, "log.reconstructParMesh")
+        recon_cmd = f"bash -c 'source /opt/OpenFOAM/OpenFOAM-v2512/etc/bashrc 2>/dev/null && cd {case_dir} && reconstructParMesh -constant 2>&1 | tee {log_file_recon}'"
+        ret = os.system(recon_cmd)
+        if ret != 0:
+            print(f"  ERROR: reconstructParMesh failed (exit {ret})")
+            print(f"  Log saved to: {log_file_recon}")
+            sys.exit(1)
+        else:
+            print(f"  > reconstructParMesh completed successfully")
+            print(f"  > Log: {log_file_recon}")
+
+        # ---- Remove processor directories ----
+        print(f"  Cleaning up processor directories...")
+        proc_dirs = glob_mod.glob(os.path.join(case_dir, "processor*"))
+        for pd in proc_dirs:
+            shutil.rmtree(pd)
+        print(f"  > Removed {len(proc_dirs)} processor directories")
+
+        # ---- Auto-run checkMesh ----
+        print(f"\n  Running checkMesh...")
+        checklog_path = os.path.join(case_dir, "checkMesh.log")
+        decomp_cmd = f"bash -c 'source /opt/OpenFOAM/OpenFOAM-v2512/etc/bashrc 2>/dev/null && cd {case_dir} && checkMesh 2>&1 | tee {checklog_path}'"
+        ret = os.system(decomp_cmd)
+        if ret == 0:
+            print(f"  > checkMesh completed (log: {checklog_path})")
+        else:
+            print(f"  > checkMesh exited with code {ret}")
+
+        # ---- Create case.foam marker file for ParaView ----
+        case_foam_path = os.path.join(case_dir, "case.foam")
+        try:
+            with open(case_foam_path, 'w') as f:
+                f.write(f"# OpenFOAM case marker\n")
+                f.write(f"# Created by compute_mesh.py\n")
+                f.write(f"# {base_name}\n")
+            print(f"  > Created case.foam marker: {case_foam_path}")
+        except Exception as e:
+            print(f"  > case.foam creation failed: {e}")
+
+        # ---- Print checkMesh results ----
+        print("\n" + "="*60)
+        print("CHECKMESH RESULTS")
+        print("="*60)
+        with open(checklog_path, 'r') as f:
+            content = f.read()
+        # Extract key sections
+        for line in content.split('\n'):
+            if ('Number of cells' in line or 'Number of links' in line or
+                'Number of faces' in line or 'Number of bytes' in line or
+                'quality' in line or 'max' in line or 'min' in line or
+                'Inside the domain' in line or 'Outside the domain' in line or
+                'boundary quality' in line or 'Summation' in line or
+                'General cell quality' in line or 'General face quality' in line or
+                'max cell volume' in line or 'max edge length' in line or
+                'max face thickness' in line or 'max face skewness' in line or
+                'max non-orthogonality' in line or 'max skewness' in line or
+                'max rotation angle' in line or 'max pyramid volume' in line or
+                'max relative volume' in line or 'max contact ratio' in line or
+                'Number of illegal faces' in line or 'Illegal face' in line or
+                'Found' in line or 'Detected' in line or 'wrote' in line or
+                'The mesh' in line or 'cell volumes' in line):
+                print(f"  {line}")
+
+    else:
+        print("\n  > ERROR: Mesh computation failed.")
+
+    print("\n" + "="*60)
+    print("WORKFLOW COMPLETE")
+    print("="*60)
+    print(f"\n  snappyHexMesh case ready at: {case_dir}")
+    print(f"  Full log: {checklog_path}")
+    print("="*60)
+
+if __name__ == "__main__":
+    run_compute_mesh()
+

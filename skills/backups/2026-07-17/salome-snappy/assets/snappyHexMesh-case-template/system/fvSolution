@@ -1,0 +1,66 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+
+solvers
+{
+    p           {
+        solver      GAMG;
+        smoother    GaussSeidel;
+        tolerance   1e-7;
+        relTol      0;
+        maxIter     1000;
+    }
+
+    U           {
+        solver      smoothSolver;
+        smoother    GaussSeidel;
+        tolerance   1e-7;
+        relTol      0;
+        maxIter     1000;
+    }
+}
+
+SIMPLE
+{
+    nNonOrthogonalCorrectors 0;
+    pRefCell        0;
+    pRefValue       0;
+}
+
+relaxationFactors
+{
+    fields
+    {
+        p           0.3;
+    }
+    equations
+    {
+        U           0.7;
+    }
+}
+
+PBiCG
+{
+    preconditioner      DILU;
+    tolerance           1e-7;
+    relTol              0;
+}
+
+smoothSolver
+{
+    smoother    symGaussSeidel;
+}
+
+GAMG
+{
+    tolerance   1e-7;
+    relTol      0;
+    maxIter     2000;
+    smoother    DIC;
+}

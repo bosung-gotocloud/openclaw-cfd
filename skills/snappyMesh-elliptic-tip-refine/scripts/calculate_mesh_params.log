@@ -1,0 +1,110 @@
+
+============================================================
+STAGE 1: STL BOUNDING BOX + ELLIPTIC FAR/REFINE PARAMETERS
+============================================================
+
+[STL Bounds] (ASCII)
+  xmin=-0.02381728  xmax=3.00000000
+  ymin=-1.22226993  ymax=1.22226993
+  zmin=-0.29500000  zmax=0.26500000
+
+[Object Dimensions]
+  xl = 3.02381728 m
+  yl = 2.44453986 m
+  zl = 0.56000000 m
+  Center: (1.488091, 0.000000, -0.015000)
+
+[System - CPU Cores]
+  Physical cores: 16
+
+[Far Ellipsoid]
+  Base dx, dy, dz: 30.238173 x 12.222699 x 5.600000 m
+  Semi-axes: a_x=15.119086, a_yz=6.111350
+  Center: (9.047635, 0.000000, -0.015000)
+  X extent: [-6.071452, 24.166721]
+  Y/Z radius: 6.111350
+
+[Mesh Sizes]
+  max_size = 0.6047634560 m  (far_max_extent/50)
+  target_surf_size = 0.0151190864 m  (xl * 0.005)
+  surf_size_level = 5
+  surf_size = 0.0188988580 m
+  min_size_level = 7
+  min_size = 0.0047247145 m
+  refine_size_level = 2
+
+[blockMesh Box]
+  margin = 1.51190864 m
+  size   = 33.26199008 x 15.24651658 x 15.24651658 m
+  min    = (-7.58336048, -7.62325829, -7.63825829)
+  max    = (25.67862960, 7.62325829, 7.60825829)
+
+[Refine Ellipsoid]
+  Base refine_dx, refine_dy, refine_dz: 15.119086 x 4.889080 x 1.120000 m
+  Semi-axes: a_x=7.559543, a_yz=2.444540
+  Center: (5.267863, 0.000000, -0.015000)
+  X extent: [-2.291680, 12.827406]
+  Refine level: 2
+
+[Boundary Layer Defaults]
+  firstLayerThickness h1 = 0.00010000 m
+  expansionRatio growth  = 1.3
+  nSurfaceLayers layers  = 10
+
+[Generating Ellipsoid STLs]
+  far    STL: hlucas_far_ellipsoid.stl (25280 triangles)
+  refine STL: hlucas_refine_ellipsoid.stl (9024 triangles)
+
+============================================================
+TIP WAKE LINE DISCOVERY
+============================================================
+
+  No hlucas_tip_points.csv found — refine-ellipsoid-only mode
+
+============================================================
+MESH VARIABLES SUMMARY
+============================================================
++-------------------+----------------------------------+---------------------------------------+
+|     Parameter     |              Value               |              Description              |
++-------------------+----------------------------------+---------------------------------------+
+| xl                | 3.023817 m                       | object X length                       |
+| yl                | 2.444540 m                       | object Y size                         |
+| zl                | 0.560000 m                       | object Z size                         |
+| max_size          | 0.60476346 m                     | level 0 cell size                     |
+| surf_size         | 0.01889886 m                     | level 5                               |
+| min_size          | 0.00472471 m                     | level 7                               |
+| h1                | 0.00010000 m                     | first layer thickness                 |
+| growth            | 1.3                              | layer expansion ratio                 |
+| layers            | 10                               | surface layer count                   |
+| far_dx            | 30.238173 m                      | far base dx                           |
+| far_dy            | 12.222699 m                      | far base dy                           |
+| far_dz            | 5.600000 m                       | far base dz                           |
+| far_a_x           | 15.119086 m                      | far semi-axis X                       |
+| far_a_yz          | 6.111350 m                       | far semi-axis Y/Z                     |
+| far_center        | 9.047635,0.000000,-0.015000      | far ellipsoid center                  |
+| far_stl           | hlucas_far_ellipsoid.stl         | far boundary STL                      |
+| block_dx          | 33.261990 m                      | blockMesh X size                      |
+| block_dy          | 15.246517 m                      | blockMesh Y size                      |
+| block_dz          | 15.246517 m                      | blockMesh Z size                      |
+| block_margin      | 1.511909 m                       | blockMesh margin around far ellipsoid |
+| refine_dx         | 15.119086 m                      | refine base dx                        |
+| refine_dy         | 4.889080 m                       | refine base dy                        |
+| refine_dz         | 1.120000 m                       | refine base dz                        |
+| refine_a_x        | 7.559543 m                       | refine semi-axis X                    |
+| refine_a_yz       | 2.444540 m                       | refine semi-axis Y/Z                  |
+| refine_center     | 5.267863,0.000000,-0.015000      | refine ellipsoid center               |
+| refine_stl        | hlucas_refine_ellipsoid.stl      | refine region STL                     |
+| refine_size_level | 2                                | refine ellipsoid level                |
+| locationinmesh    | (13.583360, 0.000000, -0.015000) | inside far, outside model             |
++-------------------+----------------------------------+---------------------------------------+
+
+============================================================
+PARAMETERS CALCULATED
+============================================================
+
+  Args saved to: hlucas_mesh_args.json
+  Far STL: hlucas_far_ellipsoid.stl
+  Refine STL: hlucas_refine_ellipsoid.stl
+
+  Workflow PAUSED — review JSON and confirm before blockMesh/snappyHexMesh.
+============================================================

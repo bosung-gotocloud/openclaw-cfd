@@ -1,0 +1,137 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+
+castellatedMesh false;
+snap            false;
+addLayers       true;
+
+geometry
+{
+    "BASENAME_surface.stl"
+    {
+        type triSurfaceMesh;
+        name BASENAME_surface;
+    }
+}
+
+castellatedMeshControls
+{
+    maxLocalCells 1000000;
+    maxGlobalCells 100000000;
+    minRefinementCells 0;
+    nCellsBetweenLevels 3;
+
+    features
+    (
+    );
+
+    refinementSurfaces
+    {
+        BASENAME_surface
+        {
+            patchInfo
+            {
+                type patch;
+            }
+            addBufferLayers false;
+            level (6 9);
+        }
+    }
+
+    resolveFeatureAngle 30;
+    refinementRegions {}
+    locationInMesh (0 0 0);
+
+    allowFreeStandingZoneFaces yes;
+}
+
+snapControls
+{
+    nSmoothPatch 5;
+    tolerance 1.0;
+    nSolveIter 300;
+    nRelaxIter 10;
+    nFeatureSnapIter 10;
+
+    implicitFeatureSnap true;
+    explicitFeatureSnap false;
+    multiRegionFeatureSnap no;
+    concaveAngle 45;
+    minAreaRatio 0.3;
+}
+
+addLayersControls
+{
+    relativeSizes false;
+    thicknessModel firstAndExpansion;
+    layers
+    {
+        "BASENAME_surface"
+        {
+            nSurfaceLayers BASE_NLAYERS;
+        }
+    }
+    firstLayerThickness BASE_FIRSTLAYER;
+    nLayers  BASE_NLAYERS;
+    expansionRatio  BASE_EXPANSION_RATIO;
+    minThickness  1e-6;
+    nGrow  0;
+
+    minMedialAxisAngle 90;
+    maxThicknessToMedialRatio 5.0;
+    maxFaceThicknessRatio 100.0;
+    minFaceWeight -1;
+    minVolRatio -1;
+    nBufferCellsNoExtrude 3;
+
+    featureAngle 75;
+    nRelaxIter 20;
+    nSmoothSurfaceNormals 1;
+    nSmoothThickness 10;
+    nSmoothNormals 3;
+    nMedialAxisIter 30;
+    nLayerIter 100;
+    nRelaxedIter 20;
+
+    relaxed
+    {
+        maxNonOrtho     90;
+        minFaceWeight   0.005;
+        minVolRatio     0.005;
+    }
+}
+
+meshQualityControls
+{
+    maxNonOrtho         80;
+    maxBoundarySkewness 20;
+    maxInternalSkewness 4;
+    maxConcave          80;
+    minVol              1e-13;
+    minDeterminant      0.001;
+    minArea             -1;
+    minTwist            0.02;
+    minTriangleTwist    -1;
+    minFaceWeight       0.05;
+    minVolRatio         0.01;
+
+    minTetQuality       1e-9;
+    minFlatness         0.5;
+    minFacePyramidVolume 1e-20;
+
+    relaxed
+    {
+        maxNonOrtho     85;
+    }
+
+    nSmoothScale 15;
+    errorReduction 0.75;
+}
+
+mergeTolerance 1e-6;

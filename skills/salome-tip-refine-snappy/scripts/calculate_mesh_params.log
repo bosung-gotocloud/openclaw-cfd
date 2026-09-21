@@ -1,0 +1,134 @@
+
+[Tip Points CSV]
+  Found: myShahed_tip_points.csv
+  Count: 6 points
+
+============================================================
+STAGE 1: GEOMETRY PROCESSING - myShahed
+============================================================
+[Object Dimensions]
+  X-Size: 2.3642 (min: -0.0107, max: 2.3535)
+  Y-Size: 2.5107 (min: -1.2553, max: 1.2554)
+  Z-Size: 0.3306 (min: -0.2003, max: 0.1303)
+  Center: (1.1714, 0.0001, -0.0350)
+  > Solid creation: Failed (using shell)
+
+[Domain Box (Cube)]
+  Size:   23.6420 x 12.5535 x 3.3060
+  Bounds: X[-4.74:18.90] Y[-6.28:6.28] Z[-1.69:1.62]
+
+[Refine Box (wake capture)]
+  Size:   11.8210 x 5.0214 x 0.6612
+  Center: (4.13, 0.00, -0.04)
+  Translate: (-1.78, -2.51, -0.37)
+
+[Tip Points]
+  Found [(2.231279, -1.197481, -0.2), (2.231279, 1.197481, -0.2), (-0.010333, 0.0, 0.001245), (2.340192, -1.189842, -0.2), (2.352975, -1.2, -0.049685), (2.352975, 1.2, -0.049685)]: 6 points (wake lines will be generated after surf_size calc)
+  > Boolean Operation: Cut Completed
+  > Geometry Saved: myShahed_geom.hdf
+
+[Geometry Summary]
+  xl = 2.364198 m
+  yl = 2.510708 m  (half-span)
+  zl = 0.330600 m
+  Domain: 10xl x 5yl x 10zl
+         = 23.6420 x 12.5535 x 3.3060 m
+
+[Mesh Parameters - User Input]
++-----------+------------+-------------------------------------------------------------------+
+| Parameter |   Value    |                            Description                            |
++-----------+------------+-------------------------------------------------------------------+
+| h1        | 0.000100 m | First cell height (BL, for snappyHexMesh)                         |
+| layers    | 10         | Boundary layer count (for snappyHexMesh)                          |
+| growth    | 1.3000     | BL growth rate (for snappyHexMesh)                                |
+| fineness  | Custom     | Custom mesh quality (growth_rate=0.3, segs/edge=1, segs/radius=3) |
++-----------+------------+-------------------------------------------------------------------+
+
+[Boundary Layer Thickness (display only)]
++---------------------+------------+---------------------------------+
+|      Parameter      |   Value    |             Formula             |
++---------------------+------------+---------------------------------+
+| h1                  | 0.000100 m | First layer height              |
+| layers              | 10         | Number of layers                |
+| growth              | 1.3000     | Growth rate                     |
+| T (total thickness) | 0.004262 m | h1*(growth^layers-1)/(growth-1) |
++---------------------+------------+---------------------------------+
+
+[Mesh Parameters - Derived]
++-------------------+-------------------+--------------------------------------+
+|     Parameter     |       Value       |             Description              |
++-------------------+-------------------+--------------------------------------+
+| max_size          | 0.472840 m        | xl / 5 (coarsest cell)               |
+| surf_size         | 0.017048 m        | 4 * T (surface cell size)            |
+| min_size          | 0.008524 m        | 2 * T (BL-based)                     |
+| refine_local_size | 0.118210 m        | max_size / 4 (refine box local size) |
+| refine_dx         | 11.8210 m         | = 0.5 x cube_dx                      |
+| refine_dy         | 5.0214 m          | = 2 x STEP yl                        |
+| refine_dz         | 0.6612 m          | = 2 x STEP zl                        |
+| refine_cx,y,z     | 4.13,0.00,-0.04   | = far box center                     |
+| refine_tx,y,z     | -1.78,-2.51,-0.37 | = center - size/2 (min corner)       |
++-------------------+-------------------+--------------------------------------+
+
+  Boundary Layer Groups:
+    - far:           6 faces (far-field)
+    - myShahed_surface: 50 faces (model surface)
+
+  Mesh Fitness:
+    - Approx cell aspect ratio: 277:1
+    - Fitness: HIGH
+
+[Tip Wake Lines]
+  Tip refine size (wake line local size): 0.034096 m
+  Refine box xmax: 10.0372
+  Number of wake lines: 6
+    Line 1: (2.2313, -1.1975, -0.2000) -> (10.0372, -1.1975, -0.2000)
+    Line 2: (2.2313, 1.1975, -0.2000) -> (10.0372, 1.1975, -0.2000)
+    Line 3: (-0.0103, 0.0000, 0.0012) -> (10.0372, 0.0000, 0.0012)
+    Line 4: (2.3402, -1.1898, -0.2000) -> (10.0372, -1.1898, -0.2000)
+    Line 5: (2.3530, -1.2000, -0.0497) -> (10.0372, -1.2000, -0.0497)
+    Line 6: (2.3530, 1.2000, -0.0497) -> (10.0372, 1.2000, -0.0497)
+
+============================================================
+MESH VARIABLES SUMMARY
+============================================================
++----------------------+-------------------+-------------------------------------------------------------------+
+|      Parameter       |       Value       |                            Description                            |
++----------------------+-------------------+-------------------------------------------------------------------+
+| xl                   | 2.3642 m          | Model length                                                      |
+| yl                   | 2.5107 m          | Model width (half-span)                                           |
+| zl                   | 0.3306 m          | Model height                                                      |
+| h1                   | 0.000100 m        | First cell height (BL, for snappyHexMesh)                         |
+| layers               | 10                | Boundary layer count (for snappyHexMesh)                          |
+| growth               | 1.3000            | BL growth rate (for snappyHexMesh)                                |
+| fineness             | Custom            | Custom mesh quality (growth_rate=0.3, segs/edge=1, segs/radius=3) |
+| T                    | 0.004262 m        | Display only (BL total thickness)                                 |
+| min_size             | 0.008524 m        | 2 * T (BL-based)                                                  |
+| surf_size            | 0.017048 m        | 4 * T (surface cell size)                                         |
+| refine_local_size    | 0.118210 m        | max_size / 4 (refine box local size)                              |
+| max_size             | 0.472840 m        | xl / 5 (coarsest cell)                                            |
+| cube_dx              | 23.6420 m         | Domain length (10xl)                                              |
+| cube_dy              | 12.5535 m         | Domain width (5yl)                                                |
+| cube_dz              | 3.3060 m          | Domain height (10zl)                                              |
+| refine_dx            | 11.8210 m         | Wake capture X size                                               |
+| refine_dy            | 5.0214 m          | Wake capture Y size                                               |
+| refine_dz            | 0.6612 m          | Wake capture Z size                                               |
+| refine_cx,y,z        | 4.13,0.00,-0.04   | Wake capture center                                               |
+| refine_tx,y,z        | -1.78,-2.51,-0.37 | Translate (-2.5xl, -yl, -zl)                                      |
+| far_faces            | 6                 | Far-field faces                                                   |
+| model_faces          | 50                | Model surface faces                                               |
+| tip_points_count     | 6                 | Tip points count (from CSV)                                       |
+| tip_wake_refine_size | 0.034096 m        | Step 5: surf_size * 2                                             |
++----------------------+-------------------+-------------------------------------------------------------------+
+
+============================================================
+PARAMETERS CALCULATED
+============================================================
+
+  Args saved to: myShahed_mesh_args.json
+
+  Files created:
+    - myShahed_geom.hdf (geometry)
+    - myShahed_mesh_args.json (mesh parameters)
+
+  Next: Run compute_mesh.py to generate mesh
+============================================================

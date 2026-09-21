@@ -1,0 +1,131 @@
+
+============================================================
+STAGE 1: STL BOUNDING BOX ANALYSIS
+============================================================
+
+[STL Bounds] (ASCII format)
+  xmin=-0.14846190  xmax=0.16773010
+  ymin=-0.18016560  ymax=0.18177210
+  zmin=-0.05481743  zmax=0.07246985
+
+[Object Dimensions]
+  xl = 0.31619200 m
+  yl = 0.36193770 m
+  zl = 0.12728728 m
+  Center: (0.009634, 0.000803, 0.008826)
+
+[System - CPU Cores]
+  Physical cores (no HyperThreading): 16
+  Recommended: mpirun -np 16
+
+[STL Surface Name]
+  new_0_surface
+
+[Far Box (far_surface)]
+  Size: 3.161920 x 1.809689 x 1.272873 m
+  Center: (0.800114, 0.000803, 0.008826)
+  Corner (outside STL): (-0.780846, -0.904041, -0.627610)
+  Margin from STL: (1.422864, 0.723875, 0.572793)
+
+[Refine Box (refine_box_surface)]
+  Size: 1.580960 x 0.723875 x 0.254575 m
+  Center: (0.404874, 0.000803, 0.008826)
+  Translate: (-0.385606, -0.361134, -0.118461)
+  Mode: inside
+  [VERIFICATION]
+  max_size ≈ 0.06323840 m (target = 10xl/50 = 0.06323840 m)
+  surf_size = max_size × 0.5^6 = 0.00098810 m (level 6)
+  min_size = surf_size × 0.5^2 = 0.00024703 m (level 8 = surf_size_level + 2)
+  min_size_level = 8
+
+============================================================
+REFINEMENT LEVELS WITH CELL SIZES
+============================================================
+  max_size (base) = 0.0632384000 m
+     Level |      Cell Size (m) |                        Formula
+    ------ |   ---------------- |   ----------------------------
+         0 |       0.0632384000 | max_size * (1/2)^0
+         1 |       0.0316192000 | max_size * (1/2)^1
+         2 |       0.0158096000 | max_size * (1/2)^2
+         3 |       0.0079048000 | max_size * (1/2)^3
+         4 |       0.0039524000 | max_size * (1/2)^4
+         5 |       0.0019762000 | max_size * (1/2)^5
+         6 |       0.0009881000 | max_size * (1/2)^6
+         7 |       0.0004940500 | max_size * (1/2)^7
+         8 |       0.0002470250 | max_size * (1/2)^8
+
+  surf_size  = 0.0009881000 m  (level 6)
+  min_size   = 0.0002470250 m  (level 8)
+  max_size   = 0.0632384000 m  (level 0)
+
+[Refinement Levels]
+  surf_size_level = 6
+  max_level = 8 (surf_size_level + 2)
+  feature_level = 8
+
+[Boundary Layer Parameters]
+  h1 = 0.000100 m (first cell height)
+  nLayers = 10
+  totalThickness = 0.000247 m (user input)
+  total_thickness = 0.000247 m (= surf_size × 0.5^(max_level-surf_size_level) = 0.000247 × 0.5^(2))
+  min_size = 0.000247 m (= total_thickness)
+  surf_size = 0.000988 m (= surface minimal cell size at max_level=8)
+
+[Mesh Sizes]
+  surf_size = 0.00098810 m (surface minimal cell size, user input at max_level=8)
+  total_thickness = 0.00024703 m (= surf_size × 0.5^(2) = surf_size × 0.5^2)
+  min_size = 0.00024703 m (= total_thickness)
+  max_size = 0.06323840 m (level 0, target = 0.06323840 m)
+  min_size_level = 8 (= surf_size_level + 2)
+  surf_size_level = 6
+  max_level = 8, feature_level = 8
+
+============================================================
+MESH VARIABLES SUMMARY
+============================================================
++-------------------+----------------------------------+---------------------------------------------------------------------+
+|     Parameter     |              Value               |                             Description                             |
++-------------------+----------------------------------+---------------------------------------------------------------------+
+| xl                | 0.316192 m                       | Object X dimension                                                  |
+| yl                | 0.361938 m                       | Object Y dimension                                                  |
+| zl                | 0.127287 m                       | Object Z dimension                                                  |
+| h1                | 0.000100 m                       | First cell height                                                   |
+| nLayers           | 10                               | Boundary layer count                                                |
+| totalThickness    | 0.000247 m                       | Total BL thickness (= min_size)                                     |
+| total_thickness   | 0.00024703 m                     | = surf_size × 0.5^(max_level-surf_size_level) = surf_size × 0.5^(2) |
+| min_size          | 0.00024703 m                     | = total_thickness                                                   |
+| surf_size         | 0.00098810 m                     | Surface minimal cell size (max_level=8)                             |
+| max_size          | 0.06323840 m                     | level 0                                                             |
+| surf_size_level   | 6                                | Surface refinement level (default 6)                                |
+| max_level         | 8                                | = surf_size_level + 2                                               |
+| feature_level     | 8                                | Feature edge refinement level                                       |
+| BASE_MINTHICKNESS | 0.00012351 m                     | = 0.5 × total_thickness (T=0.000247)                                |
+| box_dx            | 3.161920 m                       | Far box X                                                           |
+| box_dy            | 1.809689 m                       | Far box Y                                                           |
+| box_dz            | 1.272873 m                       | Far box Z                                                           |
+| refine_dx         | 1.580960 m                       | Refine box X (0.5 * farbox_x)                                       |
+| refine_dy         | 0.723875 m                       | Refine box Y (2 * stl_ysize)                                        |
+| refine_dz         | 0.254575 m                       | Refine box Z (2 * stl_zsize)                                        |
+| refine_cx,y,z     | 0.404874,0.000803,0.008826       | Refine box center                                                   |
+| refine_tx,y,z     | -0.385606,-0.361134,-0.118461    | Refine box translate                                                |
+| tx                | -0.780846 m                      | Far box corner X                                                    |
+| ty                | -0.904041 m                      | Far box corner Y                                                    |
+| tz                | -0.627610 m                      | Far box corner Z                                                    |
+| stl_surface_name  | new_0_surface                    | STL surface name                                                    |
+| locationinmesh    | (1.274402, 0.000803, 0.008826) m | Point outside STL (between xmax=0.167730 and far_xmax=2.381074)     |
++-------------------+----------------------------------+---------------------------------------------------------------------+
+
+============================================================
+PARAMETERS CALCULATED
+============================================================
+
+  📄 Args saved to: new_0_mesh_args.json
+
+  ⚠️  Please review and edit new_0_mesh_args.json if needed.
+  🔒 Workflow is PAUSED — no further steps will execute automatically.
+
+  To proceed:
+    1. Review new_0_mesh_args.json
+    2. Modify any parameter values as needed
+    3. Confirm by replying with 'proceed', 'go', or 'yes'
+============================================================

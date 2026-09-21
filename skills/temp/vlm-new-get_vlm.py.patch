@@ -1,0 +1,31 @@
+--- a/home/bosung/.openclaw/workspace/skills/tip-detect/vlm-tip-detect.py
++++ b/home/bosung/.openclaw/workspace/skills/tip-detect/vlm-tip-detect.py
+@@ -295,13 +295,23 @@ VL_PROMPT = '''Find sharp pointed tips (wing tips, tail tips, canard tips, etc.
+ 
+ def get_vlm(image_path, timeout_sec=60):
+     if not HAS_OLLAMA or not os.path.exists(image_path): return None
+     try:
++        from PIL import Image as PILImage
++        pil_img = PILImage.open(image_path)
++        w, h = pil_img.size
++        prompt = (
++            "Find sharp pointed tips (wing tips, tail tips, canard tips, etc.) in this image. "
++            "Return JSON array only.\n\n"
++            "Image size: {}x{} pixels.\n\n"
++            "Format: {{\"image_width\": {}, \"image_height\": {}, "
++            "\"tips\":[{{\"tip_id\": N, \"x1\": x1, \"y1\": y1, \"x2\": x2, \"y2\": y2}}]}}\n"
++            "- image_width, image_height: actual pixel dimensions ({}x{})\n"
++            "- tip_id: unique integer starting from 1\n"
++            "- x1, y1: top-left corner of tip bbox (pixel from top-left)\n"
++            "- x2, y2: bottom-right corner of tip bbox (pixel from top-left)\n"
++            "- Return ONLY the JSON array, no backticks, no markdown."
++            .format(w, h, w, h, w, h)
++        )
+         r = ollama.chat(model='qwen3.6:35b',
+-                        messages=[{"role":"user","content":VL_PROMPT,"images":[image_path]}],
++                        messages=[{"role":"user","content":prompt,"images":[image_path]}],
+                         stream=False)
+         return r['message']['content']
+     except Exception as e:
+         print(f"    [VLM error] {type(e).__name__}: {e}")
+         return None

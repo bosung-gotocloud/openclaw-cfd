@@ -1,0 +1,105 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+|                                                                             |
+|    HiSA: High Speed Aerodynamic solver                                      |
+|    Copyright (C) 2014-2017 Johan Heyns - CSIR, South Africa                 |
+|    Copyright (C) 2014-2017 Oliver Oxtoby - CSIR, South Africa               |
+|                                                                             |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version         2.0;
+    format          ascii;
+    class           dictionary;
+    location        "system";
+    object          controlDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application       hisa;
+
+startFrom         startTime;
+
+startTime         0;
+
+stopAt            endTime;
+
+endTime           @endTime@;
+
+deltaT            1;
+
+writeControl      runTime;
+
+writeInterval     @writeInterval@;
+
+purgeWrite        0;
+
+writeFormat       ascii;
+
+writePrecision    6;
+
+writeCompression  off;
+
+timeFormat        general;
+
+timePrecision     6;
+
+graphFormat       raw;
+
+runTimeModifiable yes;
+
+//Pstream
+//{
+//    commsType nonBlocking;
+//}
+
+functions
+{
+  body_forces
+  {
+    type forces;
+    libs  ( "libforces.so");
+    patches
+      (
+        @surfaceName@
+      );
+    CofR (@CofRx@ @CofRy@ @CofRz@);
+    updateHeader false;
+    log false;
+    executeControl timeStep;
+    executeInterval 1;
+    writeControl timeStep;
+    writeInterval 1;
+  }
+  body
+  {
+    type forceCoeffs;
+    libs  ( "libforces.so");
+    patches
+      (
+        @surfaceName@
+      );
+    coefficients
+      (
+        Cd
+        Cl
+        CmPitch
+      );
+    rho rho;
+    Aref @Aref@;
+    lRef @lRef@;
+    magUInf @magUInf@;
+    rhoInf @rhoInf@;
+    dragDir (1 0 0);
+    liftDir (0 0 1);
+    CofR (@CofRx@ @CofRy@ @CofRz@);
+    updateHeader false;
+    log false;
+    pRef 101325;
+    executeControl timeStep;
+    executeInterval 1;
+    writeControl timeStep;
+    writeInterval 1;
+  }
+}
+// ************************************************************************* //

@@ -1,0 +1,157 @@
+
+============================================================
+STAGE 1: STL BOUNDING BOX ANALYSIS
+============================================================
+
+[STL Bounds] (ASCII format)
+  xmin=-1.04000000  xmax=0.98552000
+  ymin=-1.10000000  ymax=1.10000000
+  zmin=-0.33702900  zmax=0.35747100
+
+[Object Dimensions]
+  xl = 2.02552000 m
+  yl = 2.20000000 m
+  zl = 0.69450000 m
+  Center: (-0.027240, 0.000000, 0.010221)
+
+[System - CPU Cores]
+  Physical cores (no HyperThreading): 16
+  Recommended: mpirun -np 16
+
+[STL Surface Name]
+  LC62-50H_surface
+
+[Far Box (far_surface)]
+  Size: 20.255200 x 11.000000 x 6.945000 m
+  Center: (5.036560, 0.000000, 0.010221)
+  Corner (outside STL): (-5.091040, -5.500000, -3.462279)
+  Margin from STL: (9.114840, 4.400000, 3.125250)
+
+[Refine Box (refine_box_surface)]
+  Size: 10.127600 x 4.400000 x 1.389000 m
+  Center: (2.504660, 0.000000, 0.010221)
+  Translate: (-2.559140, -2.200000, -0.684279)
+  Mode: inside
+  [VERIFICATION]
+  max_size ≈ 0.40510400 m (target = 10xl/50 = 0.40510400 m)
+  surf_size = max_size × 0.5^6 = 0.01265950 m (level 5)
+  min_size = surf_size × 0.5^2 = 0.00632975 m (level 6)
+
+============================================================
+REFINEMENT LEVELS WITH CELL SIZES
+============================================================
+  max_size (base) = 0.4051040000 m
+     Level |      Cell Size (m) |                        Formula
+    ------ |   ---------------- |   ----------------------------
+         0 |       0.4051040000 | max_size * (1/2)^0
+         1 |       0.2025520000 | max_size * (1/2)^1
+         2 |       0.1012760000 | max_size * (1/2)^2
+         3 |       0.0506380000 | max_size * (1/2)^3
+         4 |       0.0253190000 | max_size * (1/2)^4
+         5 |       0.0126595000 | max_size * (1/2)^5
+         6 |       0.0063297500 | max_size * (1/2)^6
+
+  surf_size  = 0.0126595000 m  (level 5)
+  min_size   = 0.0063297500 m  (level 6)
+
+[Refinement Levels]
+  surf_size_level = 5
+  max_level = 7
+  feature_level = 7
+
+[Boundary Layer Parameters]
+  h1 = 0.000100 m
+  nLayers = 10
+  totalThickness = 0.006330 m
+  min_size = 0.006330 m
+  surf_size = 0.012660 m
+
+[Mesh Sizes]
+  surf_size = 0.01265950 m
+  min_size = 0.00632975 m
+  max_size = 0.40510400 m
+  refine_size_level = 2
+
+============================================================
+TIP WAKE LINE DISCOVERY
+============================================================
+
+  ✓ Tip CSV found: LC62-50H_tip_points.csv
+  ✓ Tip points: 6
+  ✓ tip_wake_refine_size = 0.01265950 m (= surf_size)
+  ✓ tip_wake_refine_level = 5 (level 5)
+  ✓ Wake half-width = 0.06329750 m (10×surf_size / 2)
+  ✓ Wake lines (6):
+    Line 1: (-0.6130, -0.6920, -0.0431)
+             → X: -0.6130 → 7.5685
+             → Y: -0.7553 → -0.6287 (span=0.1266)
+             → Z: -0.1064 → 0.0202 (span=0.1266)
+    Line 2: (-0.5523, 0.6920, -0.0390)
+             → X: -0.5523 → 7.5685
+             → Y: 0.6287 → 0.7553 (span=0.1266)
+             → Z: -0.1023 → 0.0243 (span=0.1266)
+    Line 3: (0.4503, 1.1000, 0.0573)
+             → X: 0.4503 → 7.5685
+             → Y: 1.0367 → 1.1633 (span=0.1266)
+             → Z: -0.0060 → 0.1206 (span=0.1266)
+    Line 4: (0.3723, -1.1000, 0.0649)
+             → X: 0.3723 → 7.5685
+             → Y: -1.1633 → -1.0367 (span=0.1266)
+             → Z: 0.0016 → 0.1282 (span=0.1266)
+    Line 5: (0.8891, -0.0046, 0.3575)
+             → X: 0.8891 → 7.5685
+             → Y: -0.0679 → 0.0587 (span=0.1266)
+             → Z: 0.2942 → 0.4208 (span=0.1266)
+    Line 6: (-1.0394, 0.0019, -0.0822)
+             → X: -1.0394 → 7.5685
+             → Y: -0.0614 → 0.0652 (span=0.1266)
+             → Z: -0.1455 → -0.0189 (span=0.1266)
+
+============================================================
+MESH VARIABLES SUMMARY
+============================================================
++-------------------+--------------------------------+---------------------------+
+|     Parameter     |             Value              |        Description        |
++-------------------+--------------------------------+---------------------------+
+| xl                | 2.025520 m                     | Object X dimension        |
+| yl                | 2.200000 m                     | Object Y dimension        |
+| zl                | 0.694500 m                     | Object Z dimension        |
+| h1                | 0.000100 m                     | First cell height         |
+| nLayers           | 10                             | Boundary layer count      |
+| totalThickness    | 0.006330 m                     | Total BL thickness        |
+| min_size          | 0.00632975 m                   | total_thickness           |
+| surf_size         | 0.01265950 m                   | Surface minimal cell size |
+| max_size          | 0.40510400 m                   | level 0                   |
+| surf_size_level   | 5                              | Surface refinement level  |
+| max_level         | 7                              | = surf_size_level + 2     |
+| feature_level     | 7                              | Feature edge refinement   |
+| min_size_level    | 6                              | = surf_size_level + 2     |
+| BASE_MINTHICKNESS | 0.00316488 m                   | = 0.5 × total_thickness   |
+| box_dx            | 20.255200 m                    | Far box X                 |
+| box_dy            | 11.000000 m                    | Far box Y                 |
+| box_dz            | 6.945000 m                     | Far box Z                 |
+| refine_dx         | 10.127600 m                    | Refine box X              |
+| refine_dy         | 4.400000 m                     | Refine box Y              |
+| refine_dz         | 1.389000 m                     | Refine box Z              |
+| refine_cx,y,z     | 2.504660,0.000000,0.010221     | Refine box center         |
+| tx                | -5.091040 m                    | Far box corner X          |
+| ty                | -5.500000 m                    | Far box corner Y          |
+| tz                | -3.462279 m                    | Far box corner Z          |
+| stl_surface_name  | LC62-50H_surface               | STL surface name          |
+| locationinmesh    | (8.074840, 0.000000, 0.010221) | Point outside STL         |
++-------------------+--------------------------------+---------------------------+
+
+============================================================
+PARAMETERS CALCULATED
+============================================================
+
+  📄 Args saved to: LC62-50H_mesh_args.json
+
+  ⚠️  Please review and edit LC62-50H_mesh_args.json if needed.
+  🔒 Workflow is PAUSED — no further steps will execute automatically.
+
+  To proceed:
+    1. Review LC62-50H_mesh_args.json
+    2. Modify any parameter values as needed
+    3. Confirm by replying with 'proceed', 'go', or 'yes'
+============================================================

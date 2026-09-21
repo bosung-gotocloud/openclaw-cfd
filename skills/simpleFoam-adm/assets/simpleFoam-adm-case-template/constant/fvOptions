@@ -1,0 +1,50 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2512                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fvOptions;
+}
+
+actuatorDisk
+{
+    type            actuationDiskSource;
+    active          on;
+
+    // Selection
+    selectionMode     cellZone;
+    cellZone          actuatorDiskZone;
+
+    // Actuator disk geometric properties
+    diskArea        @ADM_diskArea@;
+    // disk normal vector (thrust direction, user input + normalize)
+    // Drone/비행기: diskDir는 propeller thrust vector direction
+    diskDir         (@ADM_diskDirX@ @ADM_diskDirY@ @ADM_diskDirZ@);
+    diskCentre      (@ADM_centerX@ @ADM_centerY@ @ADM_centerZ@);
+
+    // Force method: Froude or variableScaling
+    variant         Froude;
+
+    // Monitor method: how to get incoming velocity
+    monitorMethod   points;
+    upstreamPoint   (@ADM_upstreamPointX@ @ADM_upstreamPointY@ @ADM_upstreamPointZ@);  // upstream: diskDir direction, disk 바로 바깥
+
+    // Thrust and power coefficients (constant values)
+    Ct              constant @ADM_Ct@;
+    Cp              constant @ADM_Cp@;
+
+    // Optional: define sink behavior (-1 = diffuser, +1 = pump)
+    sink            true;  // propeller thrust generator
+}
+
+
+// ************************************************************************* //

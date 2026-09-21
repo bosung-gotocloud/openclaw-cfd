@@ -1,0 +1,14 @@
+ * Serving Flask app 'web_viewer'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8053
+ * Running on http://192.168.0.47:8053
+[33mPress CTRL+C to quit[0m
+127.0.0.1 - - [09/Aug/2026 09:51:08] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [09/Aug/2026 09:58:55] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [09/Aug/2026 09:58:55] "GET /plot?file=10x4M-LH-PERF.csv HTTP/1.1" 200 -
+127.0.0.1 - - [09/Aug/2026 13:53:01] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [09/Aug/2026 13:53:01] "GET /plot?file=10x4M-LH-PERF.csv HTTP/1.1" 200 -
+127.0.0.1 - - [09/Aug/2026 15:29:43] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [09/Aug/2026 15:29:43] "GET /plot?file=10x4M-LH-PERF.csv HTTP/1.1" 200 -

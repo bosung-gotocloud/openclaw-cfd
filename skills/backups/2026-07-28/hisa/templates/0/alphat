@@ -1,0 +1,27 @@
+FoamFile
+{
+ version 2.0;
+ format ascii;
+ class volScalarField;
+ location 0;
+ object alphat;
+}
+
+dimensions      [1 -1 -1 0 0 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+  far
+  {
+    type calculated;
+    value uniform         0;
+  }
+
+  @surfaceName@
+  {
+        type            compressible::alphatWallFunction;  // 30 < y+ < 150 
+        value           uniform 0;
+  }
+}

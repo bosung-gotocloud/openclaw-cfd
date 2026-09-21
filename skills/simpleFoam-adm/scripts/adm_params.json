@@ -1,0 +1,68 @@
+{
+  "ADM": {
+    "centerX": 0.0,
+    "centerY": 0.0,
+    "centerZ": 0.0,
+
+    "radius": 0.6858,
+    "Ct": -0.0001,
+    "Cp": 0.0088
+  },
+  "propeller": {
+    "diameter_inch": 24.0,
+    "pitch_inch": 12.0,
+    "rpm": 1200.0,
+    "Ct_source": "apc-db",
+    "Cp_source": "apc-db"
+  },
+  "flow": {
+    "Uinf": 41.667,
+    "AoA": 0.0,
+    "AoS": 0.0,
+    "Ux": 41.667,
+    "Uy": 0.0,
+    "Uz": 0.0
+  },
+  "fluid": {
+    "rho": 1.225,
+    "nu": 1.5e-05
+  },
+  "turbulence": {
+    "model": "kOmegaSST",
+    "intensity": 0.01,
+    "viscosityRatio": 10,
+    "lengthScale": 1.0,
+    "k_ini": 0.26042083,
+    "omega_ini": 13.31
+  },
+  "run": {
+    "endTime": 1000,
+    "deltaT": 1,
+    "writeInterval": 100
+  },
+  "reference": {
+    "L_ref": 1.0,
+    "A_ref": 1.0
+  },
+  "CofR": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+  },
+  "boundary": {
+    "patch": [
+      "far",
+      "surface"
+    ],
+    "far_BC": "freestream",
+    "surface_BC": "wall"
+  },
+  "topoSet": {
+    "enabled": true,
+    "name": "actuatorDiskZone",
+    "type": "cellZone"
+  },
+  "meshPath": "/home/bosung/WinD/0.cfd/1.AI-agent/simpleFoam-adm/myShahed-salome-snappy/case/constant/polyMesh",
+  "output_dir": "/home/bosung/.openclaw/workspace/skills/simpleFoam-adm/scripts",
+  "num_procs": 16
+}

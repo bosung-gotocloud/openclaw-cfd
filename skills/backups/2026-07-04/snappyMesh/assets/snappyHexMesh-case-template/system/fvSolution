@@ -1,0 +1,44 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+
+solvers
+{
+}
+
+PRefinement
+{
+    resolver       p;
+    nCorr          1;
+    nCorrNonOrth   1;
+    nExternCorr    0;
+    relaxFactor    1;
+    tolerance      1e-10;
+    relTol         0;
+}
+
+PimpleNoIter
+{
+    nCorr          1;
+    nCorrNonOrth   1;
+}
+
+fieldRefinementCoeffs
+{
+    y          1;
+    nRefine    0;
+    level      -1;
+}
+
+refinementRegions
+{
+}
+
+relaxation
+{
+    nRelax    1;
+}

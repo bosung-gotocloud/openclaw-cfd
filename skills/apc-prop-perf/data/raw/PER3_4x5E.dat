@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head >
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+ 
+		<style>
+		.woocommerce-checkout .shipping-select ul#shipping_method li input, .woocommerce-checkout table.shop_table ul#shipping_method li input {
+			width:5% !important;
+		}
+		.woocommerce-cart .shipping-select ul#shipping_method li input, .woocommerce-cart table.shop_table ul#shipping_method li input {
+			width:3% !important;
+		}
+		div.yith-wcwl-add-button.show {
+			display: inline !important;
+		}
+		</style>
+					<script>document.documentElement.className = document.documentElement.className + ' yes-js js_active js'</script>
+				<meta name='robots' content='noindex, follow' />
+
+	<!-- This site is optimized with the Yoast SEO plugin v27.8 - https://yoast.com/product/yoast-seo-wordpress/ -->
+	<title>Page not found - APC Propellers</title>
+	<meta property="og:locale" content="en_US" />
+	<meta property="og:title" content="Page not found - APC Propellers" />
+	<meta property="og:site_name" content="APC Propellers" />
+	<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https:\/\/schema.org","@graph":[{"@type":"WebSite","@id":"https:\/\/www.apcprop.com\/#website","url":"https:\/\/www.apcprop.com\/","name":"APC Propellers","description":"Quality Propellers that are Competition Proven","potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https:\/\/www.apcprop.com\/?s={search_term_string}"},"query-input":{"@type":"PropertyValueSpecification","valueRequired":true,"valueName":"search_term_string"}}],"inLanguage":"en-US"}]}</script>
+	<!-- / Yoast SEO plugin. -->
+
+
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link rel="alternate" type="application/rss+xml" title="APC Propellers &raquo; Feed" href="https://www.apcprop.com/feed/" />
+<link rel="alternate" type="application/rss+xml" title="APC Propellers &raquo; Comments Feed" href="https://www.apcprop.com/comments/feed/" />
+<style id='wp-img-auto-sizes-contain-inline-css' type='text/css'>
+img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
+/*# sourceURL=wp-img-auto-sizes-contain-inline-css */
+</style>
+<link rel='stylesheet' id='wc-authorize-net-cim-checkout-block-css' href='https://www.apcprop.com/wp-content/plugins/woocommerce-gateway-authorize-net-cim/assets/css/blocks/wc-authorize-net-cim-checkout-block.css?ver=3.10.2' type='text/css' media='all' />
+<link rel='stylesheet' id='genesis-sample-css' href='https://www.apcprop.com/wp-content/themes/genesis-sample/style.css?ver=2.2.4' type='text/css' media='all' />
+<style id='wp-emoji-styles-inline-css' type='text/css'>
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+/*# sourceURL=wp-emoji-styles-inline-css */
+</style>
+<link rel='stylesheet' id='wp-block-library-css' href='https://www.apcprop.com/wp-includes/css/dist/block-library/style.min.css?ver=6.9.5' type='text/css' media='all' />
+
+<style id='classic-theme-styles-inline-css' type='text/css'>
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+/*# sourceURL=/wp-includes/css/classic-themes.min.css */
+</style>
+<link rel='stylesheet' id='wc-blocks-style-css' href='https://www.apcprop.com/wp-content/plugins/woocommerce/assets/client/blocks/wc-blocks.css?ver=wc-8.9.3' type='text/css' media='all' />
+
+<style id='global-styles-inline-css' type='text/css'>
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgb(6,147,227) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgb(252,185,0) 0%,rgb(255,105,0) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgb(255,105,0) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0);--wp--preset--shadow--crisp: 6px 6px 0px rgb(0, 0, 0);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+/*# sourceURL=global-styles-inline-css */
+</style>
+
+<link rel='stylesheet' id='cookie-law-info-css' href='https://www.apcprop.com/wp-content/plugins/cookie-law-info/legacy/public/css/cookie-law-info-public.css?ver=3.5.1' type='text/css' media='all' />
+<link rel='stylesheet' id='cookie-law-info-gdpr-css' href='https://www.apcprop.com/wp-content/plugins/cookie-law-info/legacy/public/css/cookie-law-info-gdpr.css?ver=3.5.1' type='text/css' media='all' />
+<link rel='stylesheet' id='woocommerce-layout-css' href='https://www.apcprop.com/wp-content/plugins/woocommerce/assets/css/woocommerce-layout.css?ver=8.9.3' type='text/css' media='all' />
+<link rel='stylesheet' id='woocommerce-smallscreen-css' href='https://www.apcprop.com/wp-content/plugins/woocommerce/assets/css/woocommerce-smallscreen.css?ver=8.9.3' type='text/css' media='only screen and (max-width: 768px)' />
+<link rel='stylesheet' id='woocommerce-general-css' href='https://www.apcprop.com/wp-content/plugins/woocommerce/assets/css/woocommerce.css?ver=8.9.3' type='text/css' media='all' />
+<style id='woocommerce-inline-inline-css' type='text/css'>
+.woocommerce form .form-row .required { visibility: visible; }
+/*# sourceURL=woocommerce-inline-inline-css */
+</style>
+<link rel='stylesheet' id='sv-wc-payment-gateway-payment-form-v5_12_1-css' href='https://www.apcprop.com/wp-content/plugins/woocommerce-gateway-authorize-net-cim/vendor/skyverge/wc-plugin-framework/woocommerce/payment-gateway/assets/css/frontend/sv-wc-payment-gateway-payment-form.min.css?ver=5.12.1' type='text/css' media='all' />
+<link rel='stylesheet' id='jquery-selectBox-css' href='https://www.apcprop.com/wp-content/plugins/yith-woocommerce-wishlist/assets/css/jquery.selectBox.css?ver=1.2.0' type='text/css' media='all' />
+<link rel='stylesheet' id='yith-wcwl-font-awesome-css' href='https://www.apcprop.com/wp-content/plugins/yith-woocommerce-wishlist/assets/css/font-awesome.css?ver=4.7.0' type='text/css' media='all' />
+<link rel='stylesheet' id='woocommerce_prettyPhoto_css-css' href='//www.apcprop.com/wp-content/plugins/woocommerce/assets/css/prettyPhoto.css?ver=3.1.6' type='text/css' media='all' />
+<link rel='stylesheet' id='yith-wcwl-main-css' href='https://www.apcprop.com/wp-content/plugins/yith-woocommerce-wishlist/assets/css/style.css?ver=3.35.0' type='text/css' media='all' />
+<link rel='stylesheet' id='genesis-sample-fonts-css' href='//fonts.googleapis.com/css?family=Source+Sans+Pro%3A400%2C600%2C700&#038;ver=2.2.4' type='text/css' media='all' />
+<link rel='stylesheet' id='dashicons-css' href='https://www.apcprop.com/wp-includes/css/dashicons.min.css?ver=6.9.5' type='text/css' media='all' />
+<style id='dashicons-inline-css' type='text/css'>
+[data-font="Dashicons"]:before {font-family: 'Dashicons' !important;content: attr(data-icon) !important;speak: none !important;font-weight: normal !important;font-variant: normal !important;text-transform: none !important;line-height: 1 !important;font-style: normal !important;-webkit-font-smoothing: antialiased !important;-moz-osx-font-smoothing: grayscale !important;}
+/*# sourceURL=dashicons-inline-css */
+</style>
+<link rel='stylesheet' id='prdctfltr-css' href='https://www.apcprop.com/wp-content/plugins/prdctfltr/lib/css/prdctfltr.min.css?ver=6.2.3' type='text/css' media='all' />
+<script type="text/javascript" src="https://www.apcprop.com/wp-includes/js/jquery/jquery.min.js?ver=3.7.1" id="jquery-core-js"></script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1" id="jquery-migrate-js"></script>
+<script type="text/javascript" id="cookie-law-info-js-extra">
+/* <![CDATA[ */
+var Cli_Data = {"nn_cookie_ids":[],"cookielist":[],"non_necessary_cookies":[],"ccpaEnabled":"","ccpaRegionBased":"","ccpaBarEnabled":"","strictlyEnabled":["necessary","obligatoire"],"ccpaType":"gdpr","js_blocking":"1","custom_integration":"","triggerDomRefresh":"","secure_cookies":""};
+var cli_cookiebar_settings = {"animate_speed_hide":"500","animate_speed_show":"500","background":"#FFF","border":"#b1a6a6c2","border_on":"","button_1_button_colour":"#000000","button_1_button_hover":"#000000","button_1_link_colour":"#fff","button_1_as_button":"1","button_1_new_win":"","button_2_button_colour":"#000000","button_2_button_hover":"#000000","button_2_link_colour":"#ffffff","button_2_as_button":"1","button_2_hidebar":"","button_3_button_colour":"#000000","button_3_button_hover":"#000000","button_3_link_colour":"#333333","button_3_as_button":"1","button_3_new_win":"","button_4_button_colour":"#dedfe0","button_4_button_hover":"#b2b2b3","button_4_link_colour":"#b73884","button_4_as_button":"","button_7_button_colour":"#000000","button_7_button_hover":"#000000","button_7_link_colour":"#fff","button_7_as_button":"1","button_7_new_win":"","font_family":"Helvetica, Arial, sans-serif","header_fix":"","notify_animate_hide":"1","notify_animate_show":"","notify_div_id":"#cookie-law-info-bar","notify_position_horizontal":"right","notify_position_vertical":"bottom","scroll_close":"","scroll_close_reload":"","accept_close_reload":"","reject_close_reload":"","showagain_tab":"","showagain_background":"#fff","showagain_border":"#000","showagain_div_id":"#cookie-law-info-again","showagain_x_position":"100px","text":"#333333","show_once_yn":"","show_once":"10000","logging_on":"","as_popup":"","popup_overlay":"1","bar_heading_text":"","cookie_bar_as":"banner","popup_showagain_position":"bottom-right","widget_position":"left"};
+var log_object = {"ajax_url":"https://www.apcprop.com/wp-admin/admin-ajax.php"};
+//# sourceURL=cookie-law-info-js-extra
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/plugins/cookie-law-info/legacy/public/js/cookie-law-info-public.js?ver=3.5.1" id="cookie-law-info-js"></script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/plugins/woocommerce/assets/js/jquery-blockui/jquery.blockUI.min.js?ver=2.7.0-wc.8.9.3" id="jquery-blockui-js" data-wp-strategy="defer"></script>
+<script type="text/javascript" id="wc-add-to-cart-js-extra">
+/* <![CDATA[ */
+var wc_add_to_cart_params = {"ajax_url":"/wp-admin/admin-ajax.php","wc_ajax_url":"/?wc-ajax=%%endpoint%%","i18n_view_cart":"View cart","cart_url":"https://www.apcprop.com/cart/","is_cart":"","cart_redirect_after_add":"no"};
+//# sourceURL=wc-add-to-cart-js-extra
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/plugins/woocommerce/assets/js/frontend/add-to-cart.min.js?ver=8.9.3" id="wc-add-to-cart-js" data-wp-strategy="defer"></script>
+<script type="text/javascript" id="wc-geolocation-js-extra">
+/* <![CDATA[ */
+var wc_geolocation_params = {"wc_ajax_url":"/?wc-ajax=%%endpoint%%","home_url":"https://www.apcprop.com"};
+//# sourceURL=wc-geolocation-js-extra
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/plugins/woocommerce/assets/js/frontend/geolocation.min.js?ver=8.9.3" id="wc-geolocation-js" defer="defer" data-wp-strategy="defer"></script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/plugins/woocommerce/assets/js/js-cookie/js.cookie.min.js?ver=2.1.4-wc.8.9.3" id="js-cookie-js" defer="defer" data-wp-strategy="defer"></script>
+<script type="text/javascript" id="woocommerce-js-extra">
+/* <![CDATA[ */
+var woocommerce_params = {"ajax_url":"/wp-admin/admin-ajax.php","wc_ajax_url":"/?wc-ajax=%%endpoint%%"};
+//# sourceURL=woocommerce-js-extra
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/plugins/woocommerce/assets/js/frontend/woocommerce.min.js?ver=8.9.3" id="woocommerce-js" defer="defer" data-wp-strategy="defer"></script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/plugins/js_composer/assets/js/vendors/woocommerce-add-to-cart.js?ver=6.6.0" id="vc_woocommerce-add-to-cart-js-js"></script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/themes/genesis-sample/js/sticky-menu.js?ver=1.0.0" id="sample-sticky-menu-js"></script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/themes/genesis-sample/js/noty/packaged/jquery.noty.packaged.min.js?ver=1.0" id="noty-js"></script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/themes/genesis-sample/js/noty-controls.js?ver=1.0" id="noty-controls-js"></script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/themes/genesis-sample/js/custom-js.js?ver=1.0" id="custom-js-js"></script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/themes/genesis-sample/js/admin-script.js?ver=1.0" id="admin-script-js"></script>
+<link rel="https://api.w.org/" href="https://www.apcprop.com/wp-json/" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://www.apcprop.com/xmlrpc.php?rsd" />
+<script type="text/javascript">
+	window._se_plugin_version = '8.1.9';
+</script>
+<link href="https://fonts.googleapis.com/css?family=Roboto|Lato:300,300i,400,700,900" rel="stylesheet">
+<script src="https://use.fontawesome.com/cde06aa31c.js"></script>
+<script src="https://rawgit.com/jquery/jquery-mousewheel/master/jquery.mousewheel.js"></script>
+
+<style type="text/css">.site-title a { background: url(https://www.apcprop.com/wp-content/uploads/2016/12/APC-logo.png) no-repeat !important; }</style>
+ 	<noscript><style>.woocommerce-product-gallery{ opacity: 1 !important; }</style></noscript>
+	<meta name="generator" content="Powered by WPBakery Page Builder - drag and drop page builder for WordPress."/>
+<link rel="icon" href="https://www.apcprop.com/wp-content/uploads/2016/12/cropped-favicon-150x150.png" sizes="32x32" />
+<link rel="icon" href="https://www.apcprop.com/wp-content/uploads/2016/12/cropped-favicon-300x300.png" sizes="192x192" />
+<link rel="apple-touch-icon" href="https://www.apcprop.com/wp-content/uploads/2016/12/cropped-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="https://www.apcprop.com/wp-content/uploads/2016/12/cropped-favicon-300x300.png" />
+			<script src="https://www.google.com/recaptcha/api.js?hl=" async defer></script>
+			<noscript><style> .wpb_animate_when_almost_visible { opacity: 1; }</style></noscript><link rel='stylesheet' id='cookie-law-info-table-css' href='https://www.apcprop.com/wp-content/plugins/cookie-law-info/legacy/public/css/cookie-law-info-table.css?ver=3.5.1' type='text/css' media='all' />
+
+</head>
+<body class="error404 wp-theme-genesis wp-child-theme-genesis-sample theme-genesis woocommerce-no-js yith-wcms show_checkout_login_reminder yith-wcms-pro custom-header header-image full-width-content genesis-breadcrumbs-hidden genesis-footer-widgets-visible wpb-js-composer js-comp-ver-6.6.0 vc_responsive"><div class="site-container"><ul class="genesis-skip-link"><li><a href="#genesis-nav-primary" class="screen-reader-shortcut"> Skip to primary navigation</a></li><li><a href="#genesis-content" class="screen-reader-shortcut"> Skip to main content</a></li><li><a href="#genesis-footer-widgets" class="screen-reader-shortcut"> Skip to footer</a></li></ul><header class="site-header"><div class="wrap"><div class="title-area"><p class="site-title"><a href="https://www.apcprop.com/">APC Propellers</a></p><p class="site-description">Quality Propellers that are Competition Proven</p></div><div class="widget-area header-widget-area"><nav class="nav-secondary" aria-label="Secondary"><div class="wrap"><ul id="menu-header" class="menu genesis-nav-menu menu-secondary js-superfish"><li id="menu-item-19" class="hide_on_mob menu-item menu-item-type-post_type menu-item-object-page menu-item-19"><a href="https://www.apcprop.com/faq/"><span >FAQ</span></a></li>
+<li id="menu-item-20" class="hide_on_mob menu-item menu-item-type-post_type menu-item-object-page menu-item-20"><a href="https://www.apcprop.com/contact/"><span >Contact</span></a></li>
+<li class="carticon menu-item mobilecart"><a class="cart_content" href="https://www.apcprop.com/cart/"title="View your shopping cart">0 items - <span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">&#36;</span>0.00</bdi></span></a></li><li class="right search"><form class="search-form" method="get" action="https://www.apcprop.com/" role="search"><label class="search-form-label screen-reader-text" for="searchform-1">Search</label><input class="search-form-input" type="search" name="s" id="searchform-1" placeholder="Search"><input class="search-form-submit" type="submit" value="Search"><meta content="https://www.apcprop.com/?s={s}"></form></li></ul></div></nav></div></div></header><nav class="nav-primary" aria-label="Main" id="genesis-nav-primary"><div class="wrap"><ul id="menu-after-header" class="menu genesis-nav-menu menu-primary js-superfish"><li id="menu-item-21" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home menu-item-21"><a href="https://www.apcprop.com/"><span >Home</span></a></li>
+<li id="menu-item-127" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-127"><a href="https://www.apcprop.com/about/"><span >About</span></a></li>
+<li id="menu-item-152" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-152"><a href="https://www.apcprop.com/shop/"><span >Products</span></a>
+<ul class="sub-menu">
+	<li id="menu-item-9058" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-9058"><a href="https://www.apcprop.com/shop/?orderby=1491411252-asc-sort-by-product-name&#038;product_cat=accessories"><span >Accessories</span></a></li>
+	<li id="menu-item-8118" class="menu-item menu-item-type-taxonomy menu-item-object-product_cat menu-item-8118"><a href="https://www.apcprop.com/product-category/electric-motors/"><span >Electric Motors</span></a></li>
+	<li id="menu-item-8119" class="menu-item menu-item-type-taxonomy menu-item-object-product_cat menu-item-8119"><a href="https://www.apcprop.com/product-category/internal-combustion-engines/"><span >Internal Combustion Engines</span></a></li>
+	<li id="menu-item-8120" class="menu-item menu-item-type-taxonomy menu-item-object-product_cat menu-item-8120"><a href="https://www.apcprop.com/product-category/multi-copters-drones/"><span >Multi-Copters/Drones</span></a></li>
+	<li id="menu-item-24606" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-24606"><a href="https://www.apcprop.com/product-category/marine/"><span >Marine</span></a></li>
+	<li id="menu-item-8198" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-8198"><a href="https://www.apcprop.com/accessories/"><span >Product Accessories</span></a></li>
+</ul>
+</li>
+<li id="menu-item-211" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-211"><a href="https://www.apcprop.com/technical-information/"><span >Technical Info</span></a>
+<ul class="sub-menu">
+	<li id="menu-item-8134" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-8134"><a href="https://www.apcprop.com/technical-information/rpm-limits/"><span >RPM Limits</span></a></li>
+	<li id="menu-item-8135" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-8135"><a href="https://www.apcprop.com/technical-information/safety-concerns/"><span >Safety Concerns</span></a></li>
+	<li id="menu-item-14773" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-14773"><a href="https://www.apcprop.com/technical-information/performance-data/"><span >Performance Data</span></a></li>
+	<li id="menu-item-8136" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-8136"><a href="https://www.apcprop.com/technical-information/"><span >More</span></a></li>
+</ul>
+</li>
+<li id="menu-item-151" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-151"><a href="https://www.apcprop.com/my-account/"><span >My Account</span></a>
+<ul class="sub-menu">
+	<li id="menu-item-8173" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-8173"><a href="https://www.apcprop.com/my-account/orders/"><span >Orders</span></a></li>
+	<li id="menu-item-8176" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-8176"><a href="https://www.apcprop.com/wishlist/"><span >Wishlist</span></a></li>
+	<li id="menu-item-8175" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-8175"><a href="https://www.apcprop.com/my-account/edit-account/"><span >Account details</span></a></li>
+	<li id="menu-item-8174" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-8174"><a href="https://www.apcprop.com/my-account/payment-methods/"><span >Payment methods</span></a></li>
+</ul>
+</li>
+<li id="menu-item-3330" class="mobilelink menu-item menu-item-type-post_type menu-item-object-page menu-item-3330"><a href="https://www.apcprop.com/faq/"><span >FAQ</span></a></li>
+<li id="menu-item-3329" class="mobilelink menu-item menu-item-type-post_type menu-item-object-page menu-item-3329"><a href="https://www.apcprop.com/contact/"><span >Contact</span></a></li>
+<li class="carticon menu-item hide_on_mob"><a class="cart_content" href="https://www.apcprop.com/cart/"title="View your shopping cart">0 items - <span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">&#36;</span>0.00</bdi></span></a></li></ul></div></nav><a class="sticky_logo" href="https://www.apcprop.com"><img src="https://www.apcprop.com/wp-content/uploads/2017/03/APC-logo-sticky.png"></a><div class="site-inner"><div class="content-sidebar-wrap"><main class="content" id="genesis-content"><article class="entry"><h1 class="entry-title">Not found, error 404</h1><div class="entry-content"><p>The page you are looking for no longer exists. Perhaps you can return back to the site's <a href="https://www.apcprop.com/">homepage</a> and see if you can find what you are looking for. Or, you can try finding it by using the search form below.</p><div class="normal-search"><form class="search-form" method="get" action="https://www.apcprop.com/" role="search"><label class="search-form-label screen-reader-text" for="searchform-2">Search</label><input class="search-form-input" type="search" name="s" id="searchform-2" placeholder="Search"><input class="search-form-submit" type="submit" value="Search"><meta content="https://www.apcprop.com/?s={s}"></form></div><br /><br /><br /></div></article></main></div></div><div class="footer-widgets" id="genesis-footer-widgets"><h2 class="genesis-sidebar-title screen-reader-text">Footer</h2><div class="wrap"><div class="widget-area footer-widgets-1 footer-widget-area"><section id="text-4" class="widget-odd widget-last widget-first widget-1 widget widget_text"><div class="widget-wrap"><h3 class="widgettitle widget-title">Payment</h3>
+			<div class="textwidget"><div class="cards-footer">
+<img src="/wp-content/uploads/2016/12/visa@2x.png">
+<img src="/wp-content/uploads/2016/12/mastercard@2x.png">
+<img src="/wp-content/uploads/2016/12/paypal@2x.png">
+<img src="/wp-content/uploads/2017/04/discover-card.png"></div></div>
+		</div></section>
+</div><div class="widget-area footer-widgets-2 footer-widget-area"><section id="nav_menu-3" class="widget-odd widget-last widget-first widget-1 widget widget_nav_menu"><div class="widget-wrap"><h3 class="widgettitle widget-title">Technical Information</h3>
+<div class="menu-technical-info-footer-container"><ul id="menu-technical-info-footer" class="menu"><li id="menu-item-316" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-316"><a href="https://www.apcprop.com/shipping-faq/">Shipping Information</a></li>
+<li id="menu-item-313" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-313"><a href="https://www.apcprop.com/technical-information/">Technical Information</a></li>
+<li id="menu-item-315" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-315"><a href="https://www.apcprop.com/technical-information/engineering/">Engineering</a></li>
+<li id="menu-item-22351" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-22351"><a href="https://www.apcprop.com/technical-information/performance-data/">Performance Data</a></li>
+<li id="menu-item-314" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-314"><a href="https://www.apcprop.com/technical-information/file-downloads/">Downloads</a></li>
+</ul></div></div></section>
+</div><div class="widget-area footer-widgets-3 footer-widget-area"><section id="nav_menu-4" class="widget-odd widget-last widget-first widget-1 widget widget_nav_menu"><div class="widget-wrap"><h3 class="widgettitle widget-title">Products</h3>
+<div class="menu-products-footer-container"><ul id="menu-products-footer" class="menu"><li id="menu-item-425" class="menu-item menu-item-type-taxonomy menu-item-object-product_cat menu-item-425"><a href="https://www.apcprop.com/product-category/internal-combustion-engines/">Internal Combustion Engines</a></li>
+<li id="menu-item-424" class="menu-item menu-item-type-taxonomy menu-item-object-product_cat menu-item-424"><a href="https://www.apcprop.com/product-category/electric-motors/">Electric Motors</a></li>
+<li id="menu-item-426" class="menu-item menu-item-type-taxonomy menu-item-object-product_cat menu-item-426"><a href="https://www.apcprop.com/product-category/multi-copters-drones/">Multi-Copters/Drones</a></li>
+<li id="menu-item-24605" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-24605"><a href="https://www.apcprop.com/product-category/marine/">Marine</a></li>
+</ul></div></div></section>
+</div><div class="widget-area footer-widgets-4 footer-widget-area"><section id="nav_menu-5" class="widget-odd widget-last widget-first widget-1 widget widget_nav_menu"><div class="widget-wrap"><h3 class="widgettitle widget-title">Support</h3>
+<div class="menu-support-footer-container"><ul id="menu-support-footer" class="menu"><li id="menu-item-317" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-317"><a href="https://www.apcprop.com/faq/">FAQ</a></li>
+<li id="menu-item-318" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-318"><a href="https://www.apcprop.com/contact/">Contact</a></li>
+<li id="menu-item-423" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-423"><a href="https://www.apcprop.com/dealer-inquiries/">Dealer Inquiries</a></li>
+</ul></div></div></section>
+</div><div class="widget-area footer-widgets-5 footer-widget-area"><section id="text-2" class="widget-odd widget-first widget-1 widget widget_text"><div class="widget-wrap"><h3 class="widgettitle widget-title">Notice</h3>
+			<div class="textwidget"><p class="font16">APC Propellers are also available worldwide from your favorite online supplier or local hobby store.<br />
+Thank you for choosing APC.</p></div>
+		</div></section>
+<section id="text-3" class="widget-even widget-last widget-2 widget widget_text"><div class="widget-wrap">			<div class="textwidget"><div class="social-footer">
+<a href="https://twitter.com/apcprop" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+<a href="https://www.facebook.com/apcprop/" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+<a href="https://www.instagram.com/apcprop/" target="_blank"><i class="fa fa-instagram" aria-hidden="true"></i></a>
+</div>
+
+</div>
+		</div></section>
+</div></div></div><footer class="site-footer"><div class="wrap">		<div class="credits">COPYRIGHT © 2026</div> <a href="/privacy-policy/">PRIVACY POLICY</a> - <a href="https://www.apcprop.com/terms-conditions/">TERMS AND CONDITIONS</a>
+		</div></footer></div><script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":["/wp-*.php","/wp-admin/*","/wp-content/uploads/*","/wp-content/*","/wp-content/plugins/*","/wp-content/themes/genesis-sample/*","/wp-content/themes/genesis/*","/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+</script>
+<!--googleoff: all--><div id="cookie-law-info-bar" data-nosnippet="true"><span><div class="cli-bar-container cli-style-v2"><div class="cli-bar-message">We use cookies on our website to give you the most relevant experience by remembering your preferences and repeat visits. By clicking “OK!”, you consent to the use of ALL the cookies. However, you may visit "<a role='button' class="cli_settings_button">OPTIONS</a>" to provide a controlled consent.</div><div class="cli-bar-btn_container"><a id="wt-cli-accept-all-btn" role='button' data-cli_action="accept_all" class="wt-cli-element medium cli-plugin-button wt-cli-accept-all-btn cookie_action_close_header cli_action_button">OK!</a> <a href="/privacy-policy/" id="CONSTANT_OPEN_URL" target="_blank" class="medium cli-plugin-button cli-plugin-main-link">SEE OUR PRIVACY POLICY</a></div><div id="pmm-close"><a role='button' id="cookie_action_close_header_reject" class="medium cli-plugin-button cli-plugin-main-button cookie_action_close_header_reject cli_action_button wt-cli-reject-btn" data-cli_action="reject">X</a></div></div></span></div><div id="cookie-law-info-again" data-nosnippet="true"><span id="cookie_hdr_showagain">Manage consent</span></div><div class="cli-modal" data-nosnippet="true" id="cliSettingsPopup" tabindex="-1" role="dialog" aria-labelledby="cliSettingsPopup" aria-hidden="true">
+  <div class="cli-modal-dialog" role="document">
+	<div class="cli-modal-content cli-bar-popup">
+		  <button type="button" class="cli-modal-close" id="cliModalClose">
+			<svg class="" viewBox="0 0 24 24"><path d="M19 6.41l-1.41-1.41-5.59 5.59-5.59-5.59-1.41 1.41 5.59 5.59-5.59 5.59 1.41 1.41 5.59-5.59 5.59 5.59 1.41-1.41-5.59-5.59z"></path><path d="M0 0h24v24h-24z" fill="none"></path></svg>
+			<span class="wt-cli-sr-only">Close</span>
+		  </button>
+		  <div class="cli-modal-body">
+			<div class="cli-container-fluid cli-tab-container">
+	<div class="cli-row">
+		<div class="cli-col-12 cli-align-items-stretch cli-px-0">
+			<div class="cli-privacy-overview">
+				<h4>Privacy Overview</h4>				<div class="cli-privacy-content">
+					<div class="cli-privacy-content-text">This website uses cookies to improve your experience while you navigate through the website. Out of these, the cookies that are categorized as necessary are stored on your browser as they are essential for the working of basic functionalities of the website. We also use third-party cookies that help us analyze and understand how you use this website. These cookies will be stored in your browser only with your consent. You also have the option to opt-out of these cookies. But opting out of some of these cookies may affect your browsing experience.</div>
+				</div>
+				<a class="cli-privacy-readmore" aria-label="Show more" role="button" data-readmore-text="Show more" data-readless-text="Show less"></a>			</div>
+		</div>
+		<div class="cli-col-12 cli-align-items-stretch cli-px-0 cli-tab-section-container">
+												<div class="cli-tab-section">
+						<div class="cli-tab-header">
+							<a role="button" tabindex="0" class="cli-nav-link cli-settings-mobile" data-target="necessary" data-toggle="cli-toggle-tab">
+								Necessary							</a>
+																						<div class="wt-cli-necessary-checkbox">
+									<input type="checkbox" class="cli-user-preference-checkbox" id="wt-cli-checkbox-necessary" data-id="checkbox-necessary" checked="checked" />
+									<label class="form-check-label" for="wt-cli-checkbox-necessary">Necessary</label>
+								</div>
+								<span class="cli-necessary-caption">Always Enabled</span>
+													</div>
+						<div class="cli-tab-content">
+							<div class="cli-tab-pane cli-fade" data-id="necessary">
+								<div class="wt-cli-cookie-description">
+									Necessary cookies are absolutely essential for the website to function properly. These cookies ensure basic functionalities and security features of the website, anonymously.
+<table class="cookielawinfo-row-cat-table cookielawinfo-winter"><thead><tr><th class="cookielawinfo-column-1">Cookie</th><th class="cookielawinfo-column-3">Duration</th><th class="cookielawinfo-column-4">Description</th></tr></thead><tbody><tr class="cookielawinfo-row"><td class="cookielawinfo-column-1">cookielawinfo-checkbox-analytics</td><td class="cookielawinfo-column-3">11 months</td><td class="cookielawinfo-column-4">This cookie is set by GDPR Cookie Consent plugin. The cookie is used to store the user consent for the cookies in the category "Analytics".</td></tr><tr class="cookielawinfo-row"><td class="cookielawinfo-column-1">cookielawinfo-checkbox-functional</td><td class="cookielawinfo-column-3">11 months</td><td class="cookielawinfo-column-4">The cookie is set by GDPR cookie consent to record the user consent for the cookies in the category "Functional".</td></tr><tr class="cookielawinfo-row"><td class="cookielawinfo-column-1">cookielawinfo-checkbox-necessary</td><td class="cookielawinfo-column-3">11 months</td><td class="cookielawinfo-column-4">This cookie is set by GDPR Cookie Consent plugin. The cookies is used to store the user consent for the cookies in the category "Necessary".</td></tr><tr class="cookielawinfo-row"><td class="cookielawinfo-column-1">cookielawinfo-checkbox-others</td><td class="cookielawinfo-column-3">11 months</td><td class="cookielawinfo-column-4">This cookie is set by GDPR Cookie Consent plugin. The cookie is used to store the user consent for the cookies in the category "Other.</td></tr><tr class="cookielawinfo-row"><td class="cookielawinfo-column-1">cookielawinfo-checkbox-performance</td><td class="cookielawinfo-column-3">11 months</td><td class="cookielawinfo-column-4">This cookie is set by GDPR Cookie Consent plugin. The cookie is used to store the user consent for the cookies in the category "Performance".</td></tr><tr class="cookielawinfo-row"><td class="cookielawinfo-column-1">viewed_cookie_policy</td><td class="cookielawinfo-column-3">11 months</td><td class="cookielawinfo-column-4">The cookie is set by the GDPR Cookie Consent plugin and is used to store whether or not user has consented to the use of cookies. It does not store any personal data.</td></tr></tbody></table>								</div>
+							</div>
+						</div>
+					</div>
+																	<div class="cli-tab-section">
+						<div class="cli-tab-header">
+							<a role="button" tabindex="0" class="cli-nav-link cli-settings-mobile" data-target="functional" data-toggle="cli-toggle-tab">
+								Functional							</a>
+																						<div class="cli-switch">
+									<input type="checkbox" id="wt-cli-checkbox-functional" class="cli-user-preference-checkbox" data-id="checkbox-functional" />
+									<label for="wt-cli-checkbox-functional" class="cli-slider" data-cli-enable="Enabled" data-cli-disable="Disabled"><span class="wt-cli-sr-only">Functional</span></label>
+								</div>
+													</div>
+						<div class="cli-tab-content">
+							<div class="cli-tab-pane cli-fade" data-id="functional">
+								<div class="wt-cli-cookie-description">
+									Functional cookies help to perform certain functionalities like sharing the content of the website on social media platforms, collect feedbacks, and other third-party features.
+								</div>
+							</div>
+						</div>
+					</div>
+																	<div class="cli-tab-section">
+						<div class="cli-tab-header">
+							<a role="button" tabindex="0" class="cli-nav-link cli-settings-mobile" data-target="performance" data-toggle="cli-toggle-tab">
+								Performance							</a>
+																						<div class="cli-switch">
+									<input type="checkbox" id="wt-cli-checkbox-performance" class="cli-user-preference-checkbox" data-id="checkbox-performance" />
+									<label for="wt-cli-checkbox-performance" class="cli-slider" data-cli-enable="Enabled" data-cli-disable="Disabled"><span class="wt-cli-sr-only">Performance</span></label>
+								</div>
+													</div>
+						<div class="cli-tab-content">
+							<div class="cli-tab-pane cli-fade" data-id="performance">
+								<div class="wt-cli-cookie-description">
+									Performance cookies are used to understand and analyze the key performance indexes of the website which helps in delivering a better user experience for the visitors.
+								</div>
+							</div>
+						</div>
+					</div>
+																	<div class="cli-tab-section">
+						<div class="cli-tab-header">
+							<a role="button" tabindex="0" class="cli-nav-link cli-settings-mobile" data-target="analytics" data-toggle="cli-toggle-tab">
+								Analytics							</a>
+																						<div class="cli-switch">
+									<input type="checkbox" id="wt-cli-checkbox-analytics" class="cli-user-preference-checkbox" data-id="checkbox-analytics" />
+									<label for="wt-cli-checkbox-analytics" class="cli-slider" data-cli-enable="Enabled" data-cli-disable="Disabled"><span class="wt-cli-sr-only">Analytics</span></label>
+								</div>
+													</div>
+						<div class="cli-tab-content">
+							<div class="cli-tab-pane cli-fade" data-id="analytics">
+								<div class="wt-cli-cookie-description">
+									Analytical cookies are used to understand how visitors interact with the website. These cookies help provide information on metrics the number of visitors, bounce rate, traffic source, etc.
+								</div>
+							</div>
+						</div>
+					</div>
+																	<div class="cli-tab-section">
+						<div class="cli-tab-header">
+							<a role="button" tabindex="0" class="cli-nav-link cli-settings-mobile" data-target="advertisement" data-toggle="cli-toggle-tab">
+								Advertisement							</a>
+																						<div class="cli-switch">
+									<input type="checkbox" id="wt-cli-checkbox-advertisement" class="cli-user-preference-checkbox" data-id="checkbox-advertisement" />
+									<label for="wt-cli-checkbox-advertisement" class="cli-slider" data-cli-enable="Enabled" data-cli-disable="Disabled"><span class="wt-cli-sr-only">Advertisement</span></label>
+								</div>
+													</div>
+						<div class="cli-tab-content">
+							<div class="cli-tab-pane cli-fade" data-id="advertisement">
+								<div class="wt-cli-cookie-description">
+									Advertisement cookies are used to provide visitors with relevant ads and marketing campaigns. These cookies track visitors across websites and collect information to provide customized ads.
+								</div>
+							</div>
+						</div>
+					</div>
+																	<div class="cli-tab-section">
+						<div class="cli-tab-header">
+							<a role="button" tabindex="0" class="cli-nav-link cli-settings-mobile" data-target="others" data-toggle="cli-toggle-tab">
+								Others							</a>
+																						<div class="cli-switch">
+									<input type="checkbox" id="wt-cli-checkbox-others" class="cli-user-preference-checkbox" data-id="checkbox-others" />
+									<label for="wt-cli-checkbox-others" class="cli-slider" data-cli-enable="Enabled" data-cli-disable="Disabled"><span class="wt-cli-sr-only">Others</span></label>
+								</div>
+													</div>
+						<div class="cli-tab-content">
+							<div class="cli-tab-pane cli-fade" data-id="others">
+								<div class="wt-cli-cookie-description">
+									Other uncategorized cookies are those that are being analyzed and have not been classified into a category as yet.
+								</div>
+							</div>
+						</div>
+					</div>
+										</div>
+	</div>
+</div>
+		  </div>
+		  <div class="cli-modal-footer">
+			<div class="wt-cli-element cli-container-fluid cli-tab-container">
+				<div class="cli-row">
+					<div class="cli-col-12 cli-align-items-stretch cli-px-0">
+						<div class="cli-tab-footer wt-cli-privacy-overview-actions">
+						
+															<a id="wt-cli-privacy-save-btn" role="button" tabindex="0" data-cli-action="accept" class="wt-cli-privacy-btn cli_setting_save_button wt-cli-privacy-accept-btn cli-btn">SAVE &amp; ACCEPT</a>
+													</div>
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+  </div>
+</div>
+<div class="cli-modal-backdrop cli-fade cli-settings-overlay"></div>
+<div class="cli-modal-backdrop cli-fade cli-popupbar-overlay"></div>
+<!--googleon: all--><script type="text/javascript">jQuery(function($){		function load_authorize_net_cim_credit_card_payment_form_handler() {
+			window.wc_authorize_net_cim_credit_card_payment_form_handler = new WC_Authorize_Net_Payment_Form_Handler( {"plugin_id":"authorize_net_cim","id":"authorize_net_cim_credit_card","id_dasherized":"authorize-net-cim-credit-card","type":"credit-card","csc_required":true,"csc_required_for_tokens":false,"logging_enabled":false,"lightbox_enabled":false,"login_id":"37H9z2nQx","client_key":"8c2Q9stEj4Hh9DSNAW6BPq84GrFTNwAe32WE7wR8BQ9QUrt42tTLna888nstNm5Y","general_error":"An error occurred, please try again or try an alternate form of payment.","ajax_url":"https:\/\/www.apcprop.com\/wp-admin\/admin-ajax.php","ajax_log_nonce":"96e3992102","enabled_card_types":["visa","mastercard","discover"]} );window.jQuery( document.body ).trigger( "update_checkout" );		}
+
+		try {
+
+			if ( 'undefined' !== typeof WC_Authorize_Net_Payment_Form_Handler ) {
+				load_authorize_net_cim_credit_card_payment_form_handler();
+			} else {
+				window.jQuery( document.body ).on( 'wc_authorize_net_payment_form_handler_loaded', load_authorize_net_cim_credit_card_payment_form_handler );
+			}
+
+		} catch ( err ) {
+
+			
+		var errorName    = '',
+		    errorMessage = '';
+
+		if ( 'undefined' === typeof err || 0 === err.length || ! err ) {
+			errorName    = 'A script error has occurred.';
+			errorMessage = 'The script WC_Authorize_Net_Payment_Form_Handler could not be loaded.';
+		} else {
+			errorName    = 'undefined' !== typeof err.name    ? err.name    : '';
+			errorMessage = 'undefined' !== typeof err.message ? err.message : '';
+		}
+
+		
+		jQuery.post( 'https://www.apcprop.com/wp-admin/admin-ajax.php', {
+			action:   'wc_authorize_net_cim_credit_card_payment_form_log_script_event',
+			security: 'd1deb858ff',
+			name:     errorName,
+			message:  errorMessage,
+		} );
+
+				}
+		});</script><script type="text/javascript">jQuery(function($){		function load_authorize_net_cim_echeck_payment_form_handler() {
+			window.wc_authorize_net_cim_echeck_payment_form_handler = new WC_Authorize_Net_Payment_Form_Handler( {"plugin_id":"authorize_net_cim","id":"authorize_net_cim_echeck","id_dasherized":"authorize-net-cim-echeck","type":"echeck","csc_required":false,"csc_required_for_tokens":false,"logging_enabled":false,"lightbox_enabled":false,"login_id":"37H9z2nQx","client_key":"8c2Q9stEj4Hh9DSNAW6BPq84GrFTNwAe32WE7wR8BQ9QUrt42tTLna888nstNm5Y","general_error":"An error occurred, please try again or try an alternate form of payment.","ajax_url":"https:\/\/www.apcprop.com\/wp-admin\/admin-ajax.php","ajax_log_nonce":"b724a74912"} );window.jQuery( document.body ).trigger( "update_checkout" );		}
+
+		try {
+
+			if ( 'undefined' !== typeof WC_Authorize_Net_Payment_Form_Handler ) {
+				load_authorize_net_cim_echeck_payment_form_handler();
+			} else {
+				window.jQuery( document.body ).on( 'wc_authorize_net_payment_form_handler_loaded', load_authorize_net_cim_echeck_payment_form_handler );
+			}
+
+		} catch ( err ) {
+
+			
+		var errorName    = '',
+		    errorMessage = '';
+
+		if ( 'undefined' === typeof err || 0 === err.length || ! err ) {
+			errorName    = 'A script error has occurred.';
+			errorMessage = 'The script WC_Authorize_Net_Payment_Form_Handler could not be loaded.';
+		} else {
+			errorName    = 'undefined' !== typeof err.name    ? err.name    : '';
+			errorMessage = 'undefined' !== typeof err.message ? err.message : '';
+		}
+
+		
+		jQuery.post( 'https://www.apcprop.com/wp-admin/admin-ajax.php', {
+			action:   'wc_authorize_net_cim_echeck_payment_form_log_script_event',
+			security: 'f2abfe9ce2',
+			name:     errorName,
+			message:  errorMessage,
+		} );
+
+				}
+		});</script><script type='application/ld+json'> 
+{
+  "@context": "http://www.schema.org",
+  "@type": "HobbyShop",
+  "name": "APC Propellers",
+  "url": "https://www.apcprop.com/",
+  "logo": "https://www.apcprop.com/wp-content/uploads/2016/12/APC-logo.png",
+  "image": "https://www.apcprop.com/wp-content/uploads/2016/12/APC-logo.png",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "1222 Harter Ave",
+    "addressLocality": "Woodland",
+    "addressRegion": "CA",
+    "postalCode": "95776",
+    "addressCountry": "United States"
+  },
+  "hasMap": "https://www.google.com/maps/place/Landing+Products+Inc/@38.6930379,-121.7658496,17z/data=!3m1!4b1!4m5!3m4!1s0x8084d1aa9d1a2a8b:0xe8d11ba9fc116ea4!8m2!3d38.6930337!4d-121.7636609",
+  "openingHours": "Mo, Tu, We, Th, Fr 06:00-14:00",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+1-530-661-0399",
+    "contactType": "Customer Support"
+  }
+}
+ </script>
+<script>
+jQuery(document).ready(function() {
+  if(jQuery('#shipping_method_0_wf_usps_stampsus-fci').length){
+  var checkBox = document.getElementById("shipping_method_0_wf_usps_stampsus-fci");
+  } else {
+     var checkBox = false;
+  }
+  var text = document.getElementById("pmm-int-notice");
+  if (checkBox.checked == true){
+    text.style.display = "block";
+  } else {
+     var checkBox = false;
+     
+  }
+});
+</script>	<script type='text/javascript'>
+		(function () {
+			var c = document.body.className;
+			c = c.replace(/woocommerce-no-js/, 'woocommerce-js');
+			document.body.className = c;
+		})();
+	</script>
+	<script type="text/javascript" src="https://www.apcprop.com/wp-content/plugins/woocommerce/assets/js/sourcebuster/sourcebuster.min.js?ver=8.9.3" id="sourcebuster-js-js"></script>
+<script type="text/javascript" id="wc-order-attribution-js-extra">
+/* <![CDATA[ */
+var wc_order_attribution = {"params":{"lifetime":1.0e-5,"session":30,"ajaxurl":"https://www.apcprop.com/wp-admin/admin-ajax.php","prefix":"wc_order_attribution_","allowTracking":true},"fields":{"source_type":"current.typ","referrer":"current_add.rf","utm_campaign":"current.cmp","utm_source":"current.src","utm_medium":"current.mdm","utm_content":"current.cnt","utm_id":"current.id","utm_term":"current.trm","session_entry":"current_add.ep","session_start_time":"current_add.fd","session_pages":"session.pgs","session_count":"udata.vst","user_agent":"udata.uag"}};
+//# sourceURL=wc-order-attribution-js-extra
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/plugins/woocommerce/assets/js/frontend/order-attribution.min.js?ver=8.9.3" id="wc-order-attribution-js"></script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/plugins/woocommerce/assets/js/jquery-payment/jquery.payment.min.js?ver=3.0.0-wc.8.9.3" id="jquery-payment-js" data-wp-strategy="defer"></script>
+<script type="text/javascript" id="sv-wc-payment-gateway-payment-form-v5_12_1-js-extra">
+/* <![CDATA[ */
+var sv_wc_payment_gateway_payment_form_params = {"order_button_text":"Place order","card_number_missing":"Card number is missing","card_number_invalid":"Card number is invalid","card_number_digits_invalid":"Card number is invalid (only digits allowed)","card_number_length_invalid":"Card number is invalid (wrong length)","card_type_invalid":"Card is invalid","card_type_invalid_specific_type":"{card_type} card is invalid","cvv_missing":"Card security code is missing","cvv_digits_invalid":"Card security code is invalid (only digits are allowed)","cvv_length_invalid":"Card security code is invalid (must be 3 or 4 digits)","card_exp_date_invalid":"Card expiration date is invalid","check_number_digits_invalid":"Check Number is invalid (only digits are allowed)","check_number_missing":"Check Number is missing","drivers_license_state_missing":"Driver's license state is missing","drivers_license_number_missing":"Driver's license number is missing","drivers_license_number_invalid":"Driver's license number is invalid","account_number_missing":"Account Number is missing","account_number_invalid":"Account Number is invalid (only digits are allowed)","account_number_length_invalid":"Account Number is invalid (must be between 5 and 17 digits)","routing_number_missing":"Routing Number is missing","routing_number_digits_invalid":"Routing Number is invalid (only digits are allowed)","routing_number_length_invalid":"Routing Number is invalid (must be 9 digits)"};
+//# sourceURL=sv-wc-payment-gateway-payment-form-v5_12_1-js-extra
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/plugins/woocommerce-gateway-authorize-net-cim/vendor/skyverge/wc-plugin-framework/woocommerce/payment-gateway/assets/dist/frontend/sv-wc-payment-gateway-payment-form.js?ver=5.12.1" id="sv-wc-payment-gateway-payment-form-v5_12_1-js"></script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/plugins/woocommerce-gateway-authorize-net-cim/assets/js/frontend/wc-authorize-net-cim.min.js?ver=3.10.2" id="wc-authorize-net-cim-js"></script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-includes/js/hoverIntent.min.js?ver=1.10.2" id="hoverIntent-js"></script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/themes/genesis/lib/js/menu/superfish.min.js?ver=1.7.10" id="superfish-js"></script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/themes/genesis/lib/js/menu/superfish.args.min.js?ver=3.6.2" id="superfish-args-js"></script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/themes/genesis/lib/js/skip-links.min.js?ver=3.6.2" id="skip-links-js"></script>
+<script type="text/javascript" id="genesis-sample-responsive-menu-js-extra">
+/* <![CDATA[ */
+var genesisSampleL10n = {"mainMenu":"Menu","subMenu":"Menu"};
+//# sourceURL=genesis-sample-responsive-menu-js-extra
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/themes/genesis-sample/js/responsive-menu.js?ver=1.0.0" id="genesis-sample-responsive-menu-js"></script>
+<script type="text/javascript" id="q2w3_fixed_widget-js-extra">
+/* <![CDATA[ */
+var q2w3_sidebar_options = [{"sidebar":"faq_sidebar","use_sticky_position":false,"margin_top":104,"margin_bottom":30,"stop_elements_selectors":"genesis-footer-widgets","screen_max_width":1280,"screen_max_height":0,"widgets":["#text-5"]},{"sidebar":"tech-info","use_sticky_position":false,"margin_top":104,"margin_bottom":30,"stop_elements_selectors":"genesis-footer-widgets","screen_max_width":1280,"screen_max_height":0,"widgets":["#text-6"]},{"sidebar":"accessories","use_sticky_position":false,"margin_top":104,"margin_bottom":30,"stop_elements_selectors":"genesis-footer-widgets","screen_max_width":1280,"screen_max_height":0,"widgets":["#text-10","#text-9"]},{"sidebar":"my-account","use_sticky_position":false,"margin_top":104,"margin_bottom":30,"stop_elements_selectors":"genesis-footer-widgets","screen_max_width":1280,"screen_max_height":0,"widgets":["#text-11"]}];
+//# sourceURL=q2w3_fixed_widget-js-extra
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.apcprop.com/wp-content/plugins/q2w3-fixed-widget/js/frontend.min.js?ver=6.2.3" id="q2w3_fixed_widget-js"></script>
+<script id="wp-emoji-settings" type="application/json">
+{"baseUrl":"https://s.w.org/images/core/emoji/17.0.2/72x72/","ext":".png","svgUrl":"https://s.w.org/images/core/emoji/17.0.2/svg/","svgExt":".svg","source":{"concatemoji":"https://www.apcprop.com/wp-includes/js/wp-emoji-release.min.js?ver=6.9.5"}}
+</script>
+<script type="module">
+/* <![CDATA[ */
+/*! This file is auto-generated */
+const a=JSON.parse(document.getElementById("wp-emoji-settings").textContent),o=(window._wpemojiSettings=a,"wpEmojiSettingsSupports"),s=["flag","emoji"];function i(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function c(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0);const a=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);return t.every((e,t)=>e===a[t])}function p(e,t){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var n=e.getImageData(16,16,1,1);for(let e=0;e<n.data.length;e++)if(0!==n.data[e])return!1;return!0}function u(e,t,n,a){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\udde8\ud83c\uddf6","\ud83c\udde8\u200b\ud83c\uddf6")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!a(e,"\ud83e\u1fac8")}return!1}function f(e,t,n,a){let r;const o=(r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):document.createElement("canvas")).getContext("2d",{willReadFrequently:!0}),s=(o.textBaseline="top",o.font="600 32px Arial",{});return e.forEach(e=>{s[e]=t(o,e,n,a)}),s}function r(e){var t=document.createElement("script");t.src=e,t.defer=!0,document.head.appendChild(t)}a.supports={everything:!0,everythingExceptFlag:!0},new Promise(t=>{let n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),c.toString(),p.toString()].join(",")+"));",a=new Blob([e],{type:"text/javascript"});const r=new Worker(URL.createObjectURL(a),{name:"wpTestEmojiSupports"});return void(r.onmessage=e=>{i(n=e.data),r.terminate(),t(n)})}catch(e){}i(n=f(s,u,c,p))}t(n)}).then(e=>{for(const n in e)a.supports[n]=e[n],a.supports.everything=a.supports.everything&&a.supports[n],"flag"!==n&&(a.supports.everythingExceptFlag=a.supports.everythingExceptFlag&&a.supports[n]);var t;a.supports.everythingExceptFlag=a.supports.everythingExceptFlag&&!a.supports.flag,a.supports.everything||((t=a.source||{}).concatemoji?r(t.concatemoji):t.wpemoji&&t.twemoji&&(r(t.twemoji),r(t.wpemoji)))});
+//# sourceURL=https://www.apcprop.com/wp-includes/js/wp-emoji-loader.min.js
+/* ]]> */
+</script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2724c60e9da80e7',t:'MTc4NjA2Mzk0Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body></html>

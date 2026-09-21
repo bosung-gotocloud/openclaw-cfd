@@ -1,0 +1,54 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2512                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+
+forceCoeffs1
+{
+    type            forceCoeffs;
+
+    libs            (forces);
+
+    writeControl    timeStep;
+    writeInterval   1;
+
+    log             yes;
+
+    patches         (@surfaceName@);
+    rho             rhoInf;      // Indicates incompressible
+    rhoInf          @rhoInf@;           // Required when rho = rhoInf
+    liftDir         (0 0 1);
+    dragDir         (1 0 0);
+    CofR            (@CofRx@ @CofRy@ @CofRz@);  // Pitch point
+    pitchAxis       (0 1 0);
+    magUInf         @magUInf@;
+    lRef            @lRef@;
+    Aref            @Aref@;
+}
+
+// Raw forces and moments (Fx, Fy, Fz, Mx, My, Mz) on surface patch
+forces1
+{
+    type            forces;
+
+    libs            (forces);
+
+    writeControl    timeStep;
+    writeInterval   1;
+
+    log             yes;
+
+    patches         (@surfaceName@);
+    rho             rhoInf;
+    rhoInf          @rhoInf@;
+    CofR            (@CofRx@ @CofRy@ @CofRz@);
+    liftDir         (0 0 1);
+    dragDir         (1 0 0);
+    pitchAxis       (0 1 0);
+}
+
+
+// ************************************************************************* //
