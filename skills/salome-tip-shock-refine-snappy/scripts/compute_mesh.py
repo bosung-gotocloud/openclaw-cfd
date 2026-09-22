@@ -487,7 +487,7 @@ def run_compute():
     exportToFoam(mesh, foaming_dir, base_name)
 
     # ===== Setup snappyHexMesh Case =====
-    template_dir = os.path.expanduser("~/.openclaw/workspace/skills/salome-tip-refine-snappy/assets/snappyHexMesh-case-template")
+    template_dir = os.path.expanduser("~/.openclaw/workspace/skills/salome-tip-shock-refine-snappy/assets/snappyHexMesh-case-template")
 
     case_dir = setup_snappy_hex_mesh_case(
         base_dir, base_name,

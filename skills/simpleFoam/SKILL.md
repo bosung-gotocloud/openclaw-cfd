@@ -101,17 +101,14 @@ k = 1.5 × (I × Uinf)²
 ```
 omega = √k / (Cμ^0.25 × L)
 ```
-- L = reference length scale = **1.0 m**
-- L = 1.0 m (chord/characteristic length)
+- L = **1.0 m** (reference length, chord/characteristic length)
 - Cμ = 0.09
 - `calculate_solve_params.py`의 `calculate_omega()` 함수 구현:
   ```python
   def calculate_omega(k, L_ref):
       Cmu = 0.09
-    # L_ref is now the reference length scale (fixed at 1.0 m)
-    # Previously used L_mix = 0.07 * L_scale for pipe flow; now uses L directly
-      L_ref_fixed = L_ref
-      return math.sqrt(k) / ((Cmu ** 0.25) * L_ref_fixed)
+      # L_ref = 1.0 m (fixed reference length, not mixing length)
+      return math.sqrt(k) / ((Cmu ** 0.25) * L_ref)
   ```
 - main()에서:
   ```python
