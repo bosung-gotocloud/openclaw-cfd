@@ -39,7 +39,7 @@ castellatedMeshControls
     maxGlobalCells  BASE_MAXGLOBAL;
     minRefinementCells 0;
     maxLoadUnbalance 0.5;
-    nCellsBetweenLevels 3;  //급격한 배경 격자 해상도 변와로 인한 Layer Collapse를 방지
+    nCellsBetweenLevels 5;  //급격한 배경 격자 해상도 변와로 인한 Layer Collapse를 방지
     features
     ();
     refinementSurfaces
@@ -62,7 +62,7 @@ castellatedMeshControls
             level FAR_LEVEL;
         }
     }
-    resolveFeatureAngle 10;    // 곡률이 있는 곳에 refine 강화
+    resolveFeatureAngle 30;    // 곡률이 있는 곳에 refine 강화
     allowFreeStandingZoneFaces yes;
     locationInMesh LOCATION_IN_MESH;
     refinementRegions
