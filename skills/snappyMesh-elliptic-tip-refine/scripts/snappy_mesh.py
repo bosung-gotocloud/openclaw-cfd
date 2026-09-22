@@ -207,7 +207,7 @@ def main():
     num_procs = int(p.get("num_procs", 4))
     h1 = float(p.get("h1", 0.0001))
     growth = float(p.get("growth", 1.2))
-    nlayers = int(p.get("layers", 10))
+    layers = int(p.get("layers", 10))
 
     surf_size_level = int(p.get("surf_size_level", 5))
     min_size_level = int(p.get("min_size_level", 7))
@@ -256,13 +256,9 @@ def main():
     content = content.replace("BASE_MAXLOCAL", f"{max_local}")
     content = content.replace("BASE_MAXGLOBAL", f"{max_global}")
     content = content.replace("LOCATION_IN_MESH", f"({locationinmesh})")
-    # addLayersControls (relativeSizes true, per-surface layers dict):
-    #   firstLayerHeight = 0.5 -> 첫 셀이 local surface cell size의 50%
-    #   nSurfaceLayers/nLayers = layers (JSON 값 그대로), expansionRatio = growth
-    content = content.replace("nSurfaceLayers    BASE_NLAYERS;",
-                              f"nSurfaceLayers    {nlayers};")
-    content = content.replace("firstLayerHeight  BASE_FIRSTLAYER;",
-                              "firstLayerHeight  0.5;")
+    content = content.replace("BASE_LAYERS", f"{layers}")
+    content = content.replace("BASE_NLAYERS", f"{layers}")
+    content = content.replace("BASE_FIRSTLAYER", f"{h1:.8f}")
     content = content.replace("BASE_EXPANSION_RATIO", f"{growth}")
 
     # Tip wake lines

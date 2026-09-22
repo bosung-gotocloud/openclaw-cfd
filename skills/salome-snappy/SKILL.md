@@ -271,3 +271,21 @@ mpirun -np N --oversubscribe snappyHexMesh -parallel > log.snappyHexMesh 2>&1
 **원인:** `os.system()` + `tee` 파이프에서 Python이 pipe buffer를 읽지 않아 쌓임 → write blocked → hang → SIGKILL
 **해결:** `tee` 파이프 제거, 파일에 직접 redirect → pipe 없음, buffer 축적 없음
 **수정 파일:** `compute_mesh.py` (mpirun 호출 부분)
+
+## 경계층 (addLayers) 안정화 설정 — 2026-09-22
+
+`snappyMesh-elliptic-tip-refine`과 동일하게 경계층이 잘 쌓이도록
+`assets/.../snappyHexMeshDict` template을 동기화함 (backup: `snappyHexMeshDict.bak-20260922`).
+
+### addLayersControls
+- `maxThicknessToMedialRatio 0.3 -> 100.0` (LE/곡면 국소 미세 셀 영역 두께 제약 해제)
+- `maxFaceThicknessRatio 0.5 -> 1000.0` (배경 격자 크기 대비 두께 제약 대폭 완화)
+- `nBufferCellsNoExtrude 2 -> 0` (실패 지점 인접 셀 동반 삭제 방지)
+- 스무딩/완화: `featureAngle 150 -> 180`, `nRelaxIter 3 -> 50`, `nSmoothSurfaceNormals 25 -> 5`,
+  `nSmoothThickness 15 -> 20`, `nSmoothNormals 20 -> 5`, `nMedialAxisIter 20 -> 50`,
+  `nLayerIter 50 -> 200`, `nRelaxedIter 20 -> 50`
+
+### meshQualityControls
+- `maxNonOrtho 75 -> 85`, `maxInternalSkewness 10 -> 20`, `minVol 1e-13 -> 1e-15`
+- `minDeterminant 0.001 -> 1e-5`, `minTwist 0.02 -> -1`
+- `minFaceWeight 0.05 -> 0.0001`, `minVolRatio 0.05 -> 0.0001` (핵심)

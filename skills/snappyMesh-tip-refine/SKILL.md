@@ -323,3 +323,33 @@ mpirun -np N snappyHexMesh -parallel > log.snappyHexMesh 2>&1
 **원인:** `os.system()` + `tee` 파이프에서 Python이 pipe buffer를 읽지 않아 쌓임 → write blocked → hang → SIGKILL
 **해결:** `tee` 파이프 제거, 파일에 직접 redirect → pipe 없음, buffer 축적 없음
 **수정 파일:** `snappy_mesh.py` (mpirun 호출 부분)
+
+## 경계층 (addLayers) 안정화 설정 — 2026-09-21
+
+`snappyMesh-elliptic-tip-refine`와 동일하게 경계층이 잘 쌓이도록
+`assets/.../snappyHexMeshDict` template을 수정함 (backup: `snappyHexMeshDict.bak-20260921`).
+
+### castellatedMeshControls
+- `nCellsBetweenLevels 3 -> 5` — 급격한 배경 격자 해상도 변화로 인한 Layer Collapse 방지
+
+### addLayersControls
+- `maxThicknessToMedialRatio 15.0 -> 100.0` (국소 미세 셀 영역 두께 제약 해제)
+- `maxFaceThicknessRatio 300.0 -> 1000.0` (배경 격자 대비 두께 제약 완화)
+- `minFaceWeight -1`, `minVolRatio -1`
+- `nBufferCellsNoExtrude 1 -> 0` (실패 지점 인접 셀 동반 삭제 방지)
+- 스무딩/완화: `featureAngle 120 -> 180` (모든 날카로운 엣지 feature, LE edge snap 강화),
+  `nRelaxIter 10 -> 50`, `nSmoothSurfaceNormals 1 -> 5`, `nSmoothThickness 10 -> 20`,
+  `nSmoothNormals 3 -> 5`, `nMedialAxisIter 30 -> 50`, `nLayerIter 100 -> 200`, `nRelaxedIter 20 -> 50`
+- relaxed: `minFaceWeight/minVolRatio 0.001 -> 0.0001` (`maxNonOrtho 95` 유지)
+
+### meshQualityControls
+- `maxNonOrtho 65 -> 85`, `maxInternalSkewness 4 -> 20`, `minVol 1e-13 -> 1e-15`
+- `minDeterminant 0.001 -> 1e-5`, `minTwist 0.02 -> -1`
+- `minFaceWeight 0.05 -> 0.0001`, `minVolRatio 0.01 -> 0.0001` (핵심)
+- `minTetQuality 1e-9 -> 1e-15`, relaxed `maxNonOrtho 75 -> 95`
+
+### 유의사항
+- `expansionRatio`는 반드시 수치 (placeholder가 그대로 들어가면
+  `FOAM FATAL IO ERROR: expected scalar value, found 'BASE_EXPANSION_RATIO'`)
+- `relativeSizes false` + `thicknessModel firstAndExpansion`이면
+  `firstLayerThickness`가 절대 길이(mm)로 적용됨

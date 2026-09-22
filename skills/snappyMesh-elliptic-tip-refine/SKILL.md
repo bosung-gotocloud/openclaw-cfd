@@ -186,24 +186,69 @@ castellatedMeshControls
 
 addLayersControls
 {
-    relativeSizes true;
-    thicknessModel totalThickness;
     layers
     {
         MODEL_SURFACE
         {
-            nSurfaceLayers    BASE_NLAYERS;
-            firstLayerHeight  BASE_FIRSTLAYER;   // 0.5 = local surface cell size의 50%
-            expansionRatio    BASE_EXPANSION_RATIO;
+            nSurfaceLayers BASE_LAYERS;
         }
     }
 }
-```
 
-> `firstLayerHeight 0.5` = 첫 셀 높이가 local surface cell size의 50%.
-> `nSurfaceLayers`/`nLayers`는 JSON `layers` 값, `expansionRatio`는 JSON `growth` 값.
-> **주의**: `relativeSizes false`일 때 `firstLayerHeight`를 길이 단위로 쓰면 snappyHexMesh가
-> `Entry 'layers' not found` 오류를 낸다. 반드시 `relativeSizes true` + per-surface dict 구조를 사용할 것.
+relativeSizes false;
+thicknessModel firstAndExpansion;
+firstLayerThickness BASE_FIRSTLAYER;
+nLayers  BASE_NLAYERS;
+expansionRatio  BASE_EXPANSION_RATIO;
+minThickness  1e-6;
+nGrow  0;
+minMedialAxisAngle 90;
+maxThicknessToMedialRatio 100.0;
+maxFaceThicknessRatio 1000.0;
+minFaceWeight -1;
+minVolRatio -1;
+nBufferCellsNoExtrude 0;
+
+// [스무딩 및 완화 횟수 증가]
+featureAngle 180;                // 75 -> 180
+nRelaxIter 50;                   // 20 -> 50
+nSmoothSurfaceNormals 5;         // 1 -> 5
+nSmoothThickness 20;             // 10 -> 20
+nSmoothNormals 5;                // 3 -> 5
+nMedialAxisIter 50;              // 30 -> 50
+nLayerIter 200;                  // 100 -> 200
+nRelaxedIter 50;                 // 20 -> 50
+
+// [Extrusion 단계 품질 기준 완화]
+relaxed
+{
+    maxNonOrtho   95;
+    minFaceWeight 0.0001;
+    minVolRatio   0.0001;
+}
+
+meshQualityControls
+{
+    maxNonOrtho         85;
+    maxBoundarySkewness 20;
+    maxInternalSkewness 20;
+    maxConcave          80;
+    minVol              1e-15;
+    minDeterminant      1e-5;
+    minArea             -1;
+    minTwist            -1;
+    minTriangleTwist    -1;
+    minFaceWeight       0.0001;
+    minVolRatio         0.0001;
+    minTetQuality       1e-15;
+    minFlatness         0.5;
+    minFacePyramidVolume 1e-20;
+    relaxed { maxNonOrtho 95; }
+    nSmoothScale 15;
+    errorReduction 0.75;
+}
+
+```
 
 </details>
 
@@ -300,3 +345,83 @@ skills/snappyMesh-elliptic-tip-refine/
 - far ellipsoid는 snapping 대상이므로 STL 해상도가 중요합니다.
 - refine ellipsoid는 snapping surface가 아니므로 `refinementSurfaces`에 넣지 않습니다.
 - tip wake box는 refine ellipsoid와 겹칠 수 있으며, 더细한 refinement level이 우선 적용됩니다.
+
+## 경계층 (addLayers) 안정화 설정 — 2026-09-21 업데이트
+
+hlucas-case (LE 포함 곡면)에서 addLayers 단계의 layer collapse를 막기 위해
+`snappyHexMeshDict`의 `addLayersControls` / `meshQualityControls` 및
+`castellatedMeshControls`를 수정했다. template에 반영된 내용:
+
+### castellatedMeshControls
+```
+nCellsBetweenLevels 5;   // 급격한 배경 격자 해상도 변화로 인한 Layer Collapse 방지
+```
+
+### addLayersControls (핵심)
+```
+relativeSizes false;                  // firstLayerThickness가 절대 길이(mm)로 적용
+thicknessModel firstAndExpansion;
+
+firstLayerThickness BASE_FIRSTLAYER;  // 0.0001
+nLayers             BASE_NLAYERS;     // 10
+expansionRatio      BASE_EXPANSION_RATIO;  // 1.3
+minThickness  1e-6;
+nGrow         0;
+
+// [LE 및 곡면 영역 Layer Collapse 방지 핵심 설정]
+minMedialAxisAngle        90;
+maxThicknessToMedialRatio 100.0;    // 5.0 -> 100.0 (국소 미세 셀 두께 제약 해제)
+maxFaceThicknessRatio     1000.0;   // 100.0 -> 1000.0 (배경 격자 대비 두께 제약 완화)
+minFaceWeight  -1;
+minVolRatio    -1;
+nBufferCellsNoExtrude 0;           // 3 -> 0 (실패 지점 인접 셀 동반 삭제 방지)
+
+// [스무딩 및 완화 횟수 증가]
+featureAngle 180;                 // 75 -> 180 (모든 날카로운 엣지 feature로, LE edge snap 강화)
+nRelaxIter 50;                    // 20 -> 50
+nSmoothSurfaceNormals 5;          // 1 -> 5  (LE 곡면 법선 스무딩 강화)
+nSmoothThickness 20;              // 10 -> 20
+nSmoothNormals 5;                 // 3 -> 5
+nMedialAxisIter 50;               // 30 -> 50
+nLayerIter 200;                   // 100 -> 200
+nRelaxedIter 50;                  // 20 -> 50
+
+// [Extrusion 단계 품질 기준 완화]
+relaxed
+{
+    maxNonOrtho   95;             // 90 -> 95
+    minFaceWeight 0.0001;         // 0.005 -> 0.0001
+    minVolRatio   0.0001;         // 0.005 -> 0.0001
+}
+```
+
+### meshQualityControls (완화)
+```
+maxNonOrtho         85;           // 80 -> 85
+maxBoundarySkewness 20;
+maxInternalSkewness 20;           // 4 -> 20 (Refinement 경계 셀 왜곡 허용)
+maxConcave          80;
+minVol              1e-15;        // 1e-13 -> 1e-15
+minDeterminant      1e-5;         // 0.001 -> 1e-5
+minArea             -1;
+minTwist            -1;           // 0.02 -> -1
+minTriangleTwist    -1;
+minFaceWeight       0.0001;       // 0.05 -> 0.0001
+minVolRatio         0.0001;       // 0.01 -> 0.0001
+minTetQuality       1e-15;        // 1e-9 -> 1e-15
+minFlatness         0.5;
+minFacePyramidVolume 1e-20;
+relaxed { maxNonOrtho 95; }       // 85 -> 95
+nSmoothScale 15;
+errorReduction 0.75;
+```
+
+### 유의사항
+- `expansionRatio`는 반드시 **수치**여야 한다. 심볼 그대로 남아 있으면
+  `FOAM FATAL IO ERROR: expected scalar value, found 'BASE_EXPANSION_RATIO'`.
+  template은 placeholder → `snappy_mesh.py`가 JSON의 `growth` 값으로 치환.
+- `relativeSizes false` + `thicknessModel firstAndExpansion`이면
+  `firstLayerThickness`가 절대 길이(mm)로 적용된다.
+  (relativeSizes true면 face-size 대비 비율이 됨)
+- `featureAngle 180`이면 모든 날카로운 엣지가 feature로 잡혀
+  LE edge snap이 강화된다.

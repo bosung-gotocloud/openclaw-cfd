@@ -39,7 +39,7 @@ castellatedMeshControls
     maxGlobalCells  BASE_MAXGLOBAL;
     minRefinementCells 0;
     maxLoadUnbalance 0.5;
-    nCellsBetweenLevels 3;
+    nCellsBetweenLevels 5;  //급격한 배경 격자 해상도 변와로 인한 Layer Collapse를 방지
     features
     ();
     refinementSurfaces
@@ -62,7 +62,7 @@ castellatedMeshControls
             level FAR_LEVEL;
         }
     }
-    resolveFeatureAngle 30;
+    resolveFeatureAngle 10;    // 곡률이 있는 곳에 refine 강화
     allowFreeStandingZoneFaces yes;
     locationInMesh LOCATION_IN_MESH;
     refinementRegions
@@ -93,40 +93,72 @@ snapControls
 
 addLayersControls
 {
-    relativeSizes true;
-    thicknessModel totalThickness;
+    relativeSizes false;
+    thicknessModel firstAndExpansion;
     layers
     {
         MODEL_SURFACE
         {
-            nSurfaceLayers    BASE_NLAYERS;
-            firstLayerHeight  BASE_FIRSTLAYER;
-            expansionRatio    BASE_EXPANSION_RATIO;
+            nSurfaceLayers BASE_LAYERS;
         }
+    }
+    firstLayerThickness BASE_FIRSTLAYER;
+    nLayers  BASE_NLAYERS;
+    expansionRatio  BASE_EXPANSION_RATIO;
+    minThickness  1e-6;
+    nGrow  0;
+
+    // [LE 및 곡면 영역 Layer Collapse 방지 핵심 설정]
+    minMedialAxisAngle 90;
+    maxThicknessToMedialRatio 100.0; // 5.0 -> 100.0 (LE와 같이 국소적으로 미세한 셀 영역에서 두께 제약 해제)
+    maxFaceThicknessRatio 1000.0;     // 100.0 -> 1000.0 (배경 격자 크기 대비 두께 제약 대폭 완화)
+    minFaceWeight -1;
+    minVolRatio -1;
+    
+    // [버퍼 셀 제거 - 실패 지점 인접 셀까지 동반 삭제되는 현상 방지]
+    nBufferCellsNoExtrude 0;         // 3 -> 0
+
+    // [스무딩 및 완화 횟수 증가]
+    featureAngle 180;                // 75 -> 180
+    nRelaxIter 50;                   // 20 -> 50
+    nSmoothSurfaceNormals 5;         // 1 -> 5 (LE 곡면의 법선 스무딩 강화)
+    nSmoothThickness 20;             // 10 -> 20
+    nSmoothNormals 5;                // 3 -> 5
+    nMedialAxisIter 50;              // 30 -> 50
+    nLayerIter 200;                  // 100 -> 200
+    nRelaxedIter 50;                 // 20 -> 50
+
+    // [Extrusion 단계 품질 기준 완화]
+    relaxed
+    {
+        maxNonOrtho     95;          // 90 -> 95
+        minFaceWeight   0.0001;      // 0.005 -> 0.0001
+        minVolRatio     0.0001;      // 0.005 -> 0.0001
     }
 }
 
 meshQualityControls
 {
-    maxNonOrtho         80;
+    // [최종 Mesh Quality Check 통과 기준 완화]
+    maxNonOrtho         85;          // 80 -> 85
     maxBoundarySkewness 20;
-    maxInternalSkewness 4;
+    maxInternalSkewness 20;          // [핵심] 4 -> 20 (Refinement 경계 셀의 왜곡 허용)
     maxConcave          80;
-    minVol              1e-13;
-    minDeterminant      0.001;
+    minVol              1e-15;       // 1e-13 -> 1e-15
+    minDeterminant      1e-5;        // 0.001 -> 1e-5
     minArea             -1;
-    minTwist            0.02;
+    minTwist            -1;          // 0.02 -> -1
     minTriangleTwist    -1;
-    minFaceWeight       0.05;
-    minVolRatio         0.01;
+    minFaceWeight       0.0001;      // [핵심] 0.05 -> 0.0001
+    minVolRatio         0.0001;      // [핵심] 0.01 -> 0.0001
 
-    minTetQuality       1e-9;
+    minTetQuality       1e-15;       // 1e-9 -> 1e-15
     minFlatness         0.5;
     minFacePyramidVolume 1e-20;
 
     relaxed
     {
-        maxNonOrtho     85;
+        maxNonOrtho     95;          // 85 -> 95
     }
 
     nSmoothScale 15;

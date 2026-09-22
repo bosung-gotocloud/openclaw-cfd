@@ -196,3 +196,32 @@ cat <directory>/<basename>-case/checkMesh.log
 # 비어 있으면 수동 실행:
 source /opt/OpenFOAM/OpenFOAM-v2512/etc/bashrc && cd <directory>/<basename>-case && checkMesh 2>&1 | tee checkMesh.log
 ```
+
+## 경계층 (addLayers) 안정화 설정 — 2026-09-21
+
+`snappyMesh-elliptic-tip-refine`과 동일하게 경계층이 잘 쌓이도록
+`assets/.../snappyHexMeshDict` template을 동기화함 (backup: `snappyHexMeshDict.bak-20260921`).
+
+### castellatedMeshControls
+- `nCellsBetweenLevels 3 -> 5` — 급격한 배경 격자 해상도 변화로 인한 Layer Collapse 방지
+
+### addLayersControls
+- `maxThicknessToMedialRatio 5.0 -> 100.0` (LE/곡면 국소 미세 셀 영역 두께 제약 해제)
+- `maxFaceThicknessRatio 100.0 -> 1000.0` (배경 격자 크기 대비 두께 제약 대폭 완화)
+- `nBufferCellsNoExtrude 3 -> 0` (실패 지점 인접 셀 동반 삭제 방지)
+- 스무딩/완화: `featureAngle 75 -> 180`, `nRelaxIter 20 -> 50`, `nSmoothSurfaceNormals 1 -> 5`,
+  `nSmoothThickness 10 -> 20`, `nSmoothNormals 3 -> 5`, `nMedialAxisIter 30 -> 50`,
+  `nLayerIter 100 -> 200`, `nRelaxedIter 20 -> 50`
+- relaxed: `maxNonOrtho 90 -> 95`, `minFaceWeight/minVolRatio 0.005 -> 0.0001`
+
+### meshQualityControls
+- `maxNonOrtho 80 -> 85`, `maxInternalSkewness 4 -> 20`, `minVol 1e-13 -> 1e-15`
+- `minDeterminant 0.001 -> 1e-5`, `minTwist 0.02 -> -1`
+- `minFaceWeight 0.05 -> 0.0001`, `minVolRatio 0.01 -> 0.0001` (핵심)
+- `minTetQuality 1e-9 -> 1e-15`, relaxed `maxNonOrtho 85 -> 95`
+
+### 유의사항
+- `expansionRatio`는 반드시 수치 (placeholder가 그대로 들어가면
+  `FOAM FATAL IO ERROR: expected scalar value, found 'BASE_EXPANSION_RATIO'`)
+- `relativeSizes false` + `thicknessModel firstAndExpansion`이면
+  `firstLayerThickness`가 절대 길이(mm)로 적용됨

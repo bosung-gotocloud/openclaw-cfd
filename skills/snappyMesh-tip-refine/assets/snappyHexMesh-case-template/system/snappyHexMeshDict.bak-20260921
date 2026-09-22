@@ -32,7 +32,7 @@ castellatedMeshControls
     maxGlobalCells  BASE_MAXGLOBAL;
     minRefinementCells 0;
     maxLoadUnbalance 0.5;
-    nCellsBetweenLevels 5;  // 급격한 배경 격자 해상도 변화로 인한 Layer Collapse 방지
+    nCellsBetweenLevels 3;
     features
     ();
     refinementSurfaces
@@ -93,53 +93,50 @@ addLayersControls
     nGrow  0;
 
     minMedialAxisAngle 90;
-    maxThicknessToMedialRatio 100.0;   // 15.0 -> 100.0 (국소 미세 셀 영역 두께 제약 해제)
-    maxFaceThicknessRatio 1000.0;     // 300.0 -> 1000.0
+    maxThicknessToMedialRatio 15.0;
+
+    featureAngle 120;
+    nRelaxIter 10;
+    nSmoothSurfaceNormals 1;
+    nSmoothThickness 10;
+    maxFaceThicknessRatio 300.0;
+    nSmoothNormals 3;
+    nMedialAxisIter 30;
     minFaceWeight -1;
     minVolRatio -1;
-
-    nBufferCellsNoExtrude 0;          // 1 -> 0
-
-    // [스무딩 및 완화 횟수 증가]
-
-    featureAngle 180;                 // 120 -> 180 (LE edge snap 강화)
-    nRelaxIter 50;                    // 10 -> 50
-    nSmoothSurfaceNormals 5;          // 1 -> 5
-    nSmoothThickness 20;              // 10 -> 20
-    nSmoothNormals 5;                 // 3 -> 5
-    nMedialAxisIter 50;               // 30 -> 50
-    nLayerIter 200;                   // 100 -> 200
-    nRelaxedIter 50;                  // 20 -> 50
+    nBufferCellsNoExtrude 1;
+    nLayerIter 100;
+    nRelaxedIter 20;
 
     relaxed
     {
         maxNonOrtho     95;
-        minFaceWeight   0.0001;       // 0.001 -> 0.0001
-        minVolRatio     0.0001;       // 0.001 -> 0.0001
+        minFaceWeight   0.001;
+        minVolRatio     0.001;
     }
 }
 
 meshQualityControls
 {
-    maxNonOrtho         85;           // 65 -> 85
+    maxNonOrtho         65;
     maxBoundarySkewness 20;
-    maxInternalSkewness 20;           // 4 -> 20
+    maxInternalSkewness 4;
     maxConcave          80;
-    minVol              1e-15;        // 1e-13 -> 1e-15
-    minDeterminant      1e-5;         // 0.001 -> 1e-5
+    minVol              1e-13;
+    minDeterminant      0.001;
     minArea             -1;
-    minTwist            -1;           // 0.02 -> -1
+    minTwist            0.02;
     minTriangleTwist    -1;
-    minFaceWeight       0.0001;       // 0.05 -> 0.0001
-    minVolRatio         0.0001;       // 0.01 -> 0.0001
+    minFaceWeight       0.05;
+    minVolRatio         0.01;
 
-    minTetQuality       1e-15;        // 1e-9 -> 1e-15
+    minTetQuality       1e-9;
     minFlatness         0.5;
     minFacePyramidVolume 1e-20;
 
     relaxed
     {
-        maxNonOrtho     95;           // 75 -> 95
+        maxNonOrtho     75;
     }
 
     nSmoothScale 15;
