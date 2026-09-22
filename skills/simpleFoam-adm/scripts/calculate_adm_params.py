@@ -112,6 +112,9 @@ def calculate_omega(k, L_ref):
     - The 0.07 factor is for fully-developed pipe flow only
     - External aerodynamics uses chord/characteristic length directly as L
     - OpenFOAM official docs confirm: omega = k^0.5 / (C_mu^0.25 * L) — no 0.07
+    """
+    Cmu = 0.09
+    return math.sqrt(k) / ((Cmu ** 0.25) * L_ref)
 
 
 def detect_physical_cores():

@@ -101,7 +101,7 @@ k = 1.5 × (I × Uinf)²
 ```
 omega = √k / (Cμ^0.25 × L)
 ```
-- L = mixing length = **1.0e-5**
+- L = **1.0 m** (reference length, hisa 스킬과 동일)
 - Cμ = 0.09
 - `calculate_solve_params.py`의 `calculate_omega()` 함수 구현:
   ```python
@@ -111,8 +111,7 @@ omega = √k / (Cμ^0.25 × L)
   ```
 - main()에서:
   ```python
-  L_mix = 1.0e-5  # mixing length for omega
-  omega_ini = calculate_omega(k_ini, L_mix)
+  omega_ini = calculate_omega(k_ini, L_ref)  # L_ref=1.0 m
   ```
 
 ### 8. fvSchemes — Limiting 및 안정화 (Skewness/Non-orthogonality 대응)

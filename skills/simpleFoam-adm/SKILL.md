@@ -285,7 +285,7 @@ actions
 | run | endTime | 1000 | simulation time steps |
 | run | deltaT | 1 | time step |
 | run | writeInterval | 100 | write interval |
-| reference | L_ref | 1.0 | reference length |
+| reference | L_ref | 1.0 | reference length (omega = √k/(Cμ^0.25·L), hisa 스킬과 동일) |
 | reference | A_ref | 1.0 | reference area |
 | CofR | x/y/z | 0.0 | center of rotation |
 | boundary | patch | ["far", "surface"] | patch names |

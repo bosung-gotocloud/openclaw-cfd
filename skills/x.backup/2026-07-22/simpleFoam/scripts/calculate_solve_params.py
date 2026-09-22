@@ -90,10 +90,9 @@ def calculate_k(Uinf, I):
 
 
 def calculate_omega(k, L_ref):
-    """L_mix = 1.0e-5 (fixed mixing length for omega)"""
+    """omega = sqrt(k) / (Cmu^0.25 * L_ref) — L_ref=1.0 m (hisa 스킬과 동일)"""
     Cmu = 0.09
-    L_mix = 1.0e-5
-    return math.sqrt(k) / ((Cmu ** 0.25) * L_mix)
+    return math.sqrt(k) / ((Cmu ** 0.25) * L_ref)
 
 
 def detect_physical_cores():
@@ -269,7 +268,7 @@ def main():
     mu = rho * nu
 
     k_ini = calculate_k(Uinf, I)
-    omega_ini = calculate_omega(k_ini, 1.0e-5)
+    omega_ini = calculate_omega(k_ini, L_ref)
 
     AoA_rad = math.radians(AoA)
     AoS_rad = math.radians(AoS)
