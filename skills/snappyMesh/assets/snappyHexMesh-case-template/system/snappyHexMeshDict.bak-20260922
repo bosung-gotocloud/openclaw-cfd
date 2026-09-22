@@ -31,7 +31,7 @@ castellatedMeshControls
     maxGlobalCells 100000000;
     minRefinementCells 0;
     maxLoadUnbalance 0.5;
-    nCellsBetweenLevels 5;  // 급격한 배경 격자 해상도 변화로 인한 Layer Collapse 방지
+    nCellsBetweenLevels 3;
     features
         ();
     refinementSurfaces
@@ -91,38 +91,33 @@ addLayersControls
     nGrow 0;
 
     minMedialAxisAngle 90;
-    maxThicknessToMedialRatio 100.0;  // 0.3 -> 100.0 (LE/곡면 국소 미세 셀 영역 두께 제약 해제)
-    maxFaceThicknessRatio 1000.0;     // 0.5 -> 1000.0 (배경 격자 크기 대비 두께 제약 대폭 완화)
-    minFaceWeight -1;
-    minVolRatio -1;
+    maxThicknessToMedialRatio 0.3;
 
-    // [버퍼 셀 제거 - 실패 지점 인접 셀까지 동반 삭제되는 현상 방지]
-    nBufferCellsNoExtrude 0;          // 2 -> 0
-
-    // [스무딩 및 완화 횟수 증가]
-    featureAngle 180;                 // 150 -> 180
-    nRelaxIter 50;                    // 3 -> 50
-    nSmoothSurfaceNormals 5;          // 25 -> 5 (LE 곡면의 법선 스무딩 강화)
-    nSmoothThickness 20;              // 15 -> 20
-    nSmoothNormals 5;                 // 20 -> 5
-    nMedialAxisIter 50;               // 20 -> 50
-    nLayerIter 200;                   // 50 -> 200
-    nRelaxedIter 50;                  // 20 -> 50
+    featureAngle 150;
+    nRelaxIter 3;
+    nSmoothSurfaceNormals 25;
+    nSmoothNormals 20;
+    nMedialAxisIter 20;
+    nSmoothThickness 15;
+    maxFaceThicknessRatio 0.5;
+    nBufferCellsNoExtrude 2;
+    nLayerIter 50;
+    nRelaxedIter 20;
 }
 
 meshQualityControls
 {
-    maxNonOrtho         85;          // 75 -> 85
+    maxNonOrtho         75;
     maxBoundarySkewness 30;
-    maxInternalSkewness 20;          // [핵심] 10 -> 20 (Refinement 경계 셀의 왜곡 허용)
+    maxInternalSkewness 10;
     maxConcave          80;
-    minVol              1e-15;       // 1e-13 -> 1e-15
-    minDeterminant      1e-5;        // 0.001 -> 1e-5
+    minVol              1e-13;
+    minDeterminant      0.001;
     minArea             -1;
-    minTwist            -1;          // 0.02 -> -1
+    minTwist            0.02;
     minTriangleTwist    -1;
-    minFaceWeight       0.0001;      // [핵심] 0.05 -> 0.0001
-    minVolRatio         0.0001;      // [핵심] 0.05 -> 0.0001
+    minFaceWeight       0.05;
+    minVolRatio         0.05;
 
     minTetQuality       1e-15;
     minFlatness         0.5;
@@ -130,7 +125,7 @@ meshQualityControls
 
     relaxed
     {
-        maxNonOrtho     95;          // 75 -> 95
+        maxNonOrtho     75;
     }
 
     nSmoothScale 15;

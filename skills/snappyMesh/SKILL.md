@@ -187,6 +187,45 @@ castellatedMeshControls
 
 > **Tuning tip:** For bluff body drag prediction, increase `refine_dx` toward `0.85 × far_box_dx` (or adjust `refine_tx` downstream) to push the refine box further downstream. For streamlined bodies, default is sufficient.
 
+### Layer Generation (addLayersControls)
+
+> **2026-09-22 update:** Layer growth parameters relaxed to maximize layer count (aligned with tip-refine variants).
+
+| Parameter | Description | Before | **After** |
+|-----------|-------------|--------|-----------|
+| `maxThicknessToMedialRatio` | Two-way medial axis distance limit | 0.3 | **100.0** |
+| `maxFaceThicknessRatio` | Face-to-background-cell thickness limit | 0.5 | **1000.0** |
+| `minFaceWeight` | Minimum face weight (surface) | — | **-1** |
+| `minVolRatio` | Minimum volume ratio (surface) | — | **-1** |
+| `nBufferCellsNoExtrude` | Buffer cells with no extrusion | 2 | **0** |
+| `featureAngle` | Feature angle threshold (degrees) | 150 | **180** |
+| `nRelaxIter` | Relaxation iterations | 3 | **50** |
+| `nSmoothSurfaceNormals` | Surface normal smoothing | 25 | **5** |
+| `nSmoothNormals` | Internal normal smoothing | 20 | **5** |
+| `nSmoothThickness` | Thickness smoothing | 15 | **20** |
+| `nMedialAxisIter` | Medial axis iterations | 20 | **50** |
+| `nLayerIter` | Total layer iterations | 50 | **200** |
+| `nRelaxedIter` | Relaxed iterations | 20 | **50** |
+
+### Mesh Quality Controls (relaxed for layer growth)
+
+| Parameter | Before | **After** |
+|-----------|--------|-----------|
+| `maxNonOrtho` | 75 | **85** |
+| `maxInternalSkewness` | 10 | **20** |
+| `minVol` | 1e-13 | **1e-15** |
+| `minDeterminant` | 0.001 | **1e-5** |
+| `minTwist` | 0.02 | **-1** |
+| `minFaceWeight` | 0.05 | **0.0001** |
+| `minVolRatio` | 0.05 | **0.0001** |
+| `relaxed.maxNonOrtho` | 75 | **95** |
+
+### Castellated Mesh Controls
+
+| Parameter | Before | **After** |
+|-----------|--------|-----------|
+| `nCellsBetweenLevels` | 3 | **5** (prevents layer collapse at sharp resolution transitions) |
+
 **Default calculation:**
 | Parameter | Formula |
 |------|-|
