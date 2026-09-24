@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""calculate_adm_params.py - simpleFoam ADM (Actuator Disk Model) 파라미터 계산
+"""calculate_adm_params.py - HiSA ADM (Actuator Disk Model) 파라미터 계산
+
+HiSA (compressible, kOmegaSST, AUSMPlusUp, pseudoTime) + Actuator Disk Model.
 
 대화 기반 파라미터 처리:
 - mandatory: mesh_path, disk center(X,Y,Z), disk radius
 - diskDir: **user 직접 입력** (disk normal vector = propeller thrust vector direction)
-- upstreamPoint: 0.1R in diskDir + 0.75R perpendicular to disk (upstream: diskDir direction, incoming velocity 측정용)
+- upstreamPoint: diskCenter + diskDir×0.1×radius (upstream: diskDir direction, incoming velocity 측정용)
 - 프로펠러 정보 (선택): diameter(inch), pitch(inch), RPM -> APC DB에서 Ct/Cp 자동 조회 (U_perp 기반 속도)
 
 Usage:
@@ -62,6 +64,10 @@ DEFAULTS = {
         "rho": 1.225,
         "nu": 1.5e-5
     },
+    "thermodynamic": {
+        "T": 293.15,
+        "pInf": 101325
+    },
     "turbulence": {
         "model": "kOmegaSST",
         "intensity": 0.01,
@@ -71,7 +77,10 @@ DEFAULTS = {
     "run": {
         "endTime": 1000,
         "deltaT": 1,
-        "writeInterval": 100
+        "writeInterval": 100,
+        "pseudoCoNum": 1,
+        "pseudoCoNumMax": 10000,
+        "timeScheme": "steadyState"
     },
     "reference": {
         "L_ref": 1.0,
@@ -104,17 +113,10 @@ def calculate_k(Uinf, I):
     return 1.5 * (I * Uinf) ** 2
 
 
-def calculate_omega(k, L_ref):
-    """Calculate omega using OpenFOAM kOmegaSST formula:
-    omega = sqrt(k) / (Cmu^0.25 * L)
-    
-    Why L_ref=1.0 m instead of 0.07*L_scale:
-    - The 0.07 factor is for fully-developed pipe flow only
-    - External aerodynamics uses chord/characteristic length directly as L
-    - OpenFOAM official docs confirm: omega = k^0.5 / (C_mu^0.25 * L) — no 0.07
-    """
+def calculate_omega(k, L_scale):
+    """omega = sqrt(k) / (Cmu^0.25 * L)  (L_ref = 1.0 fixed, same as HiSA skill)"""
     Cmu = 0.09
-    return math.sqrt(k) / ((Cmu ** 0.25) * L_ref)
+    return math.sqrt(k) / (Cmu ** 0.25) / L_scale
 
 
 def detect_physical_cores():
@@ -141,12 +143,14 @@ def main():
     params = {
         "flow": dict(DEFAULTS["flow"]),
         "fluid": dict(DEFAULTS["fluid"]),
+        "thermodynamic": dict(DEFAULTS["thermodynamic"]),
         "turbulence": dict(DEFAULTS["turbulence"]),
         "run": dict(DEFAULTS["run"]),
         "reference": dict(DEFAULTS["reference"]),
         "CofR": dict(DEFAULTS["CofR"]),
         "boundary": dict(DEFAULTS["boundary"]),
-        "topoSet": dict(DEFAULTS["topoSet"])
+        "topoSet": dict(DEFAULTS["topoSet"]),
+        "ADM": dict(DEFAULTS["ADM"])
     }
 
     # mandatory: mesh_path
@@ -155,21 +159,20 @@ def main():
         print("ERROR: mesh_path is required and must be a valid directory.")
         sys.exit(1)
 
-    # ADM 파라미터 (user는 center + radius + diskDir 직접 입력)
+    # ADM parameters (user: center + radius + diskDir)
     print("\n=== Actuator Disk Parameters ===")
     adm_center_x = float(input("  Disk center X (m): ").strip() or "0")
     adm_center_y = float(input("  Disk center Y (m): ").strip() or "0")
     adm_center_z = float(input("  Disk center Z (m): ").strip() or "0")
     adm_radius = float(input("  Disk radius (m): ").strip() or "1")
 
-    # diskDir: user 직접 입력 (normalize 필요)
+    # diskDir: user input (normalize)
     print("\n=== Disk Normal Vector (propeller thrust direction) ===")
     print("  diskDir is the direction of the thrust vector of the propeller.")
-    diskDir_x = float(input("  diskDir X [{dx}]: ".format(dx=DEFAULTS['ADM']['diskDirX'])).strip() or str(DEFAULTS['ADM']['diskDirX']))
-    diskDir_y = float(input("  diskDir Y [{dy}]: ".format(dy=DEFAULTS['ADM']['diskDirY'])).strip() or str(DEFAULTS['ADM']['diskDirY']))
-    diskDir_z = float(input("  diskDir Z [{dz}]: ".format(dz=DEFAULTS['ADM']['diskDirZ'])).strip() or str(DEFAULTS['ADM']['diskDirZ']))
+    diskDir_x = float(input("  diskDir X [{}]: ".format(DEFAULTS['ADM']['diskDirX'])).strip() or str(DEFAULTS['ADM']['diskDirX']))
+    diskDir_y = float(input("  diskDir Y [{}]: ".format(DEFAULTS['ADM']['diskDirY'])).strip() or str(DEFAULTS['ADM']['diskDirY']))
+    diskDir_z = float(input("  diskDir Z [{}]: ".format(DEFAULTS['ADM']['diskDirZ'])).strip() or str(DEFAULTS['ADM']['diskDirZ']))
 
-    # normalize diskDir
     d_norm = math.sqrt(diskDir_x**2 + diskDir_y**2 + diskDir_z**2)
     if d_norm < 1e-12:
         print("ERROR: diskDir cannot be zero vector. Exiting.")
@@ -178,14 +181,13 @@ def main():
     diskDir_y /= d_norm
     diskDir_z /= d_norm
 
-    # Flow 파라미터 먼저 입력 (Uinf, AoA, AoS)
+    # Flow
     print("\n=== Flow Conditions ===")
-    Uinf_str = input("  Uinf (m/s) [{Uinf}]: ".format(Uinf=DEFAULTS['flow']['Uinf'])).strip()
+    Uinf_str = input("  Uinf (m/s) [{}]: ".format(DEFAULTS['flow']['Uinf'])).strip()
     Uinf_ms = float(Uinf_str) if Uinf_str else DEFAULTS['flow']['Uinf']
-    AoA = float(input("  AoA (deg) [{AoA}]: ".format(AoA=DEFAULTS['flow']['AoA'])).strip() or str(DEFAULTS['flow']['AoA']))
-    AoS = float(input("  AoS (deg) [{AoS}]: ".format(AoS=DEFAULTS['flow']['AoS'])).strip() or str(DEFAULTS['flow']['AoS']))
+    AoA = float(input("  AoA (deg) [{}]: ".format(DEFAULTS['flow']['AoA'])).strip() or str(DEFAULTS['flow']['AoA']))
+    AoS = float(input("  AoS (deg) [{}]: ".format(DEFAULTS['flow']['AoS'])).strip() or str(DEFAULTS['flow']['AoS']))
 
-    # Flow 벡터 계산 (Uinf는 항상 양수, AoA/AoS로 방향)
     AoA_rad = math.radians(AoA)
     AoS_rad = math.radians(AoS)
     cos_aos = math.cos(AoS_rad)
@@ -198,7 +200,7 @@ def main():
     Uz = Uinf_ms * sin_aoa
 
     print("\n  Uinf vector: ({:.6f}, {:.6f}, {:.6f}) m/s".format(Ux, Uy, Uz))
-    print("  diskDir (thrust direction): ({:.6f}, {:.6f}, {:.6f})  [user 입력, 자동 normalize]".format(diskDir_x, diskDir_y, diskDir_z))
+    print("  diskDir (thrust direction): ({:.6f}, {:.6f}, {:.6f})  [user input, auto-normalized]".format(diskDir_x, diskDir_y, diskDir_z))
 
     # upstreamPoint: 0.1R in diskDir + 0.75R perpendicular to disk
     # (perp = cross(diskDir, (0,1,0)) if not parallel, else cross(diskDir, (1,0,0)))
@@ -220,12 +222,12 @@ def main():
     upstream_y = adm_center_y + dy*off_disk + cy*off_perp
     upstream_z = adm_center_z + dz*off_disk + cz*off_perp
 
-    # U_perp: disk 면에 수직인 속도 성분 (Uinf dot diskDir)
+    # U_perp = Uinf dot diskDir (disk face perpendicular velocity, for APC Ct/Cp lookup)
     U_perp = Ux * diskDir_x + Uy * diskDir_y + Uz * diskDir_z
     U_perp_magnitude = abs(U_perp)
 
-    # 프로펠러 정보 -> Ct/Cp 자동 조회
-    print("\n=== Propeller Info (Ct/Cp 자동 조회) ===")
+    # Propeller info -> Ct/Cp auto lookup
+    print("\n=== Propeller Info (Ct/Cp auto lookup) ===")
     prop_diameter = input("  Propeller diameter (inch) [empty=skip]: ").strip()
     prop_pitch = input("  Propeller pitch (inch) [empty=skip]: ").strip()
     prop_rpm = input("  Propeller RPM [empty=skip]: ").strip()
@@ -237,33 +239,34 @@ def main():
             prop_diameter = float(prop_diameter)
             prop_pitch = float(prop_pitch)
             prop_rpm = float(prop_rpm)
-            # U_perp 기반 속도 계산
             speed_mph = U_perp_magnitude / 0.44704  # m/s -> mph
             adm_ct, adm_cp = query_apc_ct_cp(prop_diameter, prop_pitch, prop_rpm, speed_mph)
             if adm_ct is not None and adm_cp is not None:
                 print("  OK Ct={:.4f}, Cp={:.4f} (APC DB {}x{} @ {} RPM, U_perp={:.1f} m/s, speed={:.1f} mph)".format(
                     adm_ct, adm_cp, prop_diameter, prop_pitch, prop_rpm, U_perp_magnitude, speed_mph))
             else:
-                print("  APC DB에 {}x{} 없음. 수동 입력 필요.".format(prop_diameter, prop_pitch))
+                print("  APC DB: {}x{} not found. Manual input required.".format(prop_diameter, prop_pitch))
         except Exception as e:
-            print("  APC DB lookup failed ({}). 수동 입력 필요.".format(e))
+            print("  APC DB lookup failed ({}). Manual input required.".format(e))
 
     if adm_ct is None:
-        adm_ct = float(input("  Ct (수동) [0.8]: ").strip() or "0.8")
+        adm_ct = float(input("  Ct (manual) [0.8]: ").strip() or "0.8")
     if adm_cp is None:
-        adm_cp = float(input("  Cp (수동) [0.4]: ").strip() or "0.4")
+        adm_cp = float(input("  Cp (manual) [0.4]: ").strip() or "0.4")
 
+    # Thermodynamic (HiSA compressible)
+    T = params['thermodynamic']['T']
+    pInf = params['thermodynamic']['pInf']
     nu = params['fluid']['nu']
     rho = params['fluid']['rho']
     I = params['turbulence']['intensity']
     L_scale = params['turbulence']['lengthScale']
 
     k_ini = calculate_k(Uinf_ms, I)
-    omega_ini = calculate_omega(k_ini, L_ref)
+    omega_ini = calculate_omega(k_ini, L_scale)
 
     output_dir = script_dir
 
-    # Build output
     output = {
         "ADM": {
             "centerX": adm_center_x,
@@ -303,6 +306,10 @@ def main():
             "rho": rho,
             "nu": nu
         },
+        "thermodynamic": {
+            "T": T,
+            "pInf": pInf
+        },
         "turbulence": {
             "model": params['turbulence']['model'],
             "intensity": I,
@@ -314,7 +321,10 @@ def main():
         "run": {
             "endTime": params['run']['endTime'],
             "deltaT": params['run']['deltaT'],
-            "writeInterval": params['run']['writeInterval']
+            "writeInterval": params['run']['writeInterval'],
+            "pseudoCoNum": params['run']['pseudoCoNum'],
+            "pseudoCoNumMax": params['run']['pseudoCoNumMax'],
+            "timeScheme": params['run']['timeScheme']
         },
         "reference": {
             "L_ref": params['reference']['L_ref'],
@@ -332,7 +342,6 @@ def main():
         "num_procs": detect_physical_cores()
     }
 
-    # Output JSON
     output_path = os.path.join(output_dir, "adm_params.json")
     with open(output_path, 'w') as f:
         json.dump(output, f, indent=2)
@@ -343,7 +352,7 @@ def main():
 
     print("\n--- Actuator Disk ---")
     print("  Center:       ({:.4f}, {:.4f}, {:.4f}) m".format(adm_center_x, adm_center_y, adm_center_z))
-    print("  diskDir:      ({:.6f}, {:.6f}, {:.6f})  [thrust vector direction, user 입력+normalize]".format(diskDir_x, diskDir_y, diskDir_z))
+    print("  diskDir:      ({:.6f}, {:.6f}, {:.6f})  [thrust vector direction, user input + normalize]".format(diskDir_x, diskDir_y, diskDir_z))
     print("  Radius:       {:.4f} m".format(adm_radius))
     print("  Ct:           {:.4f}".format(adm_ct))
     print("  Cp:           {:.4f}".format(adm_cp))
@@ -357,11 +366,16 @@ def main():
     print("  AoA:      {:.2f} deg".format(AoA))
     print("  AoS:      {:.2f} deg".format(AoS))
     print("  U =       ({:.6f}, {:.6f}, {:.6f})".format(Ux, Uy, Uz))
-    print("  U_perp:   {:.6f} m/s  (Uinf dot diskDir, disk 면 수직 성분)".format(U_perp))
+    print("  U_perp:   {:.6f} m/s  (Uinf dot diskDir, disk face perpendicular)".format(U_perp))
+
+    print("\n--- Thermodynamic (HiSA compressible) ---")
+    print("  T:        {:.2f} K".format(T))
+    print("  pInf:     {:.2f} Pa".format(pInf))
 
     print("\n--- ADM Derived ---")
-    print("  upstreamPoint: ({:.6f}, {:.6f}, {:.6f}) m  [upstream: diskDir direction, incoming velocity 측정]".format(upstream_x, upstream_y, upstream_z))
-    print("    (disk center + diskDir × {:.6f} + perp × {:.6f})".format(off_disk, off_perp))
+    print("  upstreamPoint: ({:.6f}, {:.6f}, {:.6f}) m  [upstream: diskDir direction, incoming velocity measurement]".format(upstream_x, upstream_y, upstream_z))
+    print("    (disk center + diskDir x {:.6f})  [upstream: diskDir direction]".format(epsilon))
+    print("  epsilon: {:.6f} m (radius x 0.1)".format(epsilon))
 
     print("\n--- Turbulence ---")
     print("  Model:   {}".format(params['turbulence']['model']))
@@ -372,12 +386,14 @@ def main():
     print("  endTime:      {}".format(params['run']['endTime']))
     print("  deltaT:       {}".format(params['run']['deltaT']))
     print("  writeInterval:{}".format(params['run']['writeInterval']))
+    print("  pseudoCoNum:  {}".format(params['run']['pseudoCoNum']))
+    print("  pseudoCoNumMax: {}".format(params['run']['pseudoCoNumMax']))
 
     print("\n--- Hardware ---")
     print("  procs: {}".format(output['num_procs']))
 
     print("\nJSON saved to: {}".format(output_path))
-    print("Edit this file to change parameters, then run run_simpleFoam_adm.py")
+    print("Edit this file to change parameters, then run run_hisa_adm.py")
 
 
 if __name__ == '__main__':

@@ -1,15 +1,17 @@
 ---
-name: simpleFoam-adm
-description: simpleFoam Actuator Disk Model (ADM) - 드론/비행기 프로펠러 추력 시뮬레이션
+name: hisa-adm
+description: HiSA (compressible kOmegaSST, AUSMPlusUp, pseudoTime) Actuator Disk Model - 드론/비행기 프로펠러 추력 시뮬레이션
 ---
 
-# simpleFoam ADM Skill
+# HiSA ADM Skill
 
-simpleFoam (비압축성) 기반 Actuator Disk Model (ADM) 워크플로우 스킬. **드론/비행기 프로펠러** 추력 시뮬레이션에 최적화.
+HiSA (High Speed Aerodynamic, compressible, kOmegaSST, AUSMPlusUp, pseudoTime) + **Actuator Disk Model (ADM)** 워크플로우 스킬.
+
+**드론/비행기 프로펠러** 추력 시뮬레이션에 최적화. simpleFoam-adm의 ADM 개념을 HiSA(compressible)에 적용.
 
 ## 선택 규칙
 - **ADM (Actuator Disk)**: 풍력 터빈/프로펠러의 distributed force source term 필요
-- **simpleFoam**: 비압축성, 정류류 (steady-state)
+- **HiSA**: compressible, pseudoTime (dualTimeStepping), AUSMPlusUp flux scheme
 - **kOmegaSST**: RAS turbulence model (omegaMin 1e-10 포함)
 - **APC 프로펠러 데이터**: `apc-prop-perf` 스킬 연동으로 Ct/Cp 자동 조회 가능
 
@@ -50,7 +52,7 @@ U_perp = Uinf_vector · diskDir = Ux·nx + Uy·ny + Uz·nz
 |U_perp| → mph → APC DB에서 Ct/Cp 보간
 ```
 - 프로펠러는 disk 면에 **수직인 속도**로만 추력 발생
-- **주의**: diskDir와 Uinf_vector가 수직이면 U_perp=0 → 추력 없음
+- **주의**: diskDir과 Uinf_vector가 수직이면 U_perp=0 → 추력 없음
 
 **예시: diskDir=(1,0,0), Uinf=50, AoA=5°, AoS=0°**
 ```
@@ -64,7 +66,7 @@ U_perp = (49.81, 0, 4.36) · (1, 0, 0) = 49.81 m/s
 speed_mph = 49.81 / 0.44704 = 111.4 mph → APC DB lookup
 ```
 
-> **주의**: diskDir와 Uinf_vector가 수직이면 U_perp=0 → 추력 없음. 프로펠러 disk 면이 유체 흐름과 수직이 되어야 함.
+> **주의**: diskDir과 Uinf_vector가 수직이면 U_perp=0 → 추력 없음. 프로펠러 disk 면이 유체 흐름과 수직이 되어야 함.
 
 ---
 
@@ -80,38 +82,44 @@ python3 calculate_adm_params.py
 - **프로펠러 정보 (선택)**: diameter(inch), pitch(inch), RPM → **APC DB 자동 조회** → Ct/Cp 자동 적용
 - JSON → 출력 → 표시 → **승인 필수**
 
-### 2. simpleFoam parallel 실행
+### 2. HiSA ADM parallel 실행
 ```bash
+python3 run_hisa_adm.py
 ```
 - JSON 자동 검색: `adm_params.json` (실행 디렉토리 기준)
-- 무조건 parallel 실행 (decomposePar → mpirun --oversubscribe simpleFoam -parallel → reconstructPar → processor* cleanup)
-- 로그 파일명: `log.simpleFoam`
+- 무조건 parallel 실행 (decomposePar → mpirun --oversubscribe hisa -parallel → reconstructPar → processor* cleanup)
+- 로그 파일명: `log.hisa`
 - case 폴더 생성 후 `case/` + `case.foam` 파일 자동 생성
 
 ## 워크플로우 규칙
+- **reconstructPar / processor cleanup**: hisa exit=0일 때만 실행. background launch에서는 exit code를 직접 확인 후 수동 reconstructPar 필요
 - **output_dir**: 실행 디렉토리 (AI가 대화로 판단)
 - **mesh_path**: 메쉬 polyMesh 디렉토리
 - **파라미터 계산 후 승인 필수**: 승인 전에 실행하지 않음
 
 ## 템플릿 구조
 ```
-assets/simpleFoam-adm-case-template/
+templates/
 ├── 0/
-│   ├── p          (freestreamPressure, zeroGradient)
-│   ├── U          (freestreamVelocity, noSlip)
-│   ├── k          (freestream, kqRWallFunction)
-│   ├── omega      (freestream, omegaWallFunction)
-│   └── nut        (freestream, nutUSpaldingWallFunction)
+│   ├── U          (characteristicFarfieldVelocity, boundaryCorrectedFixedValue)
+│   ├── p          (characteristicFarfieldPressure, characteristicWallPressure)
+│   ├── T          (characteristicFarfieldTemperature, characteristicWallTemperature)
+│   ├── k          (turbulentIntensityKineticEnergyInlet, kqRWallFunction)
+│   ├── omega      (turbulentMixingLengthFrequencyInlet, omegaWallFunction)
+│   ├── nut        (calculated, nutUSpaldingWallFunction)
+│   ├── alphat     (calculated, compressible::alphatWallFunction)
+│   └── include/
+│       └── freestreamConditions  (U, p, T include file)
 ├── constant/
-│   ├── transportProperties      (Newtonian, nu)
-│   ├── turbulenceProperties    (kOmegaSST, omegaMin 1e-10)
-│   └── fvOptions               (actuatorDisk ADM source term)
+│   ├── thermophysicalProperties  (hePsiThermo, sutherland, perfectGas)
+│   ├── turbulenceProperties      (kOmegaSST, omegaMin 1e-10)
+│   └── fvOptions                 (actuationDisk ADM source term)
 └── system/
-    ├── controlDict       (application=simpleFoam)
-    ├── fvSchemes         (steadyState, upwind, limited 0.333)
-    ├── fvSolution        (GAMG p, smoothSolver, SIMPLE)
-    ├── decomposeParDict  (scotch)
-    └── forceCoeffs       (forceCoeffs1 + forces1)
+    ├── controlDict       (application=hisa, forceCoeffs function object)
+    ├── fvSchemes         (AUSMPlusUp, dualTime, wVanLeer)
+    ├── fvSolution        (GMRES + LUSGS, pseudoTime)
+    ├── topoSetDict       (cylinderToCell → actuatorDiskZone)
+    └── decomposeParDict  (scotch)
 ```
 
 ## 플레이스홀더
@@ -123,18 +131,25 @@ assets/simpleFoam-adm-case-template/
 | @ADM_diskArea@ | derived | π × radius² |
 | @ADM_Ct@ | ADM.Ct | 추력계수 |
 | @ADM_Cp@ | ADM.Cp | 동력계수 |
-| @ADM_upstreamPointX/Y/Z@ | derived | diskCenter + diskDir×0.1×radius + perp×0.75×radius (upstream: diskDir) |
+| @ADM_upstreamPointX/Y/Z@ | derived | diskCenter + diskDir×0.1R + perp×0.75R |
 | @ADM_centre2X/Y/Z@ | derived | center + diskDir × 0.1 × radius |
 | @ADM_cylinderRadius@ | derived | radius × 1.05 |
 | @Uvec@ | flow.Ux/Y/Z | freestream velocity vector |
 | @Uinf@ | flow.Uinf | freestream velocity magnitude |
 | @kIni@ | turbulence.k_ini | turbulent kinetic energy |
 | @omegaIni@ | turbulence.omega_ini | specific dissipation rate |
+| @intensity@ | turbulence.intensity | turbulence intensity |
+| @mixingLength@ | turbulence.lengthScale | mixing length |
 | @nu@ | fluid.nu | kinematic viscosity |
 | @rhoInf@ / @rho@ | fluid.rho | density |
+| @T@ | thermodynamic.T | temperature (K) |
+| @pInf@ | thermodynamic.pInf | freestream pressure (Pa) |
 | @endTime@ | run.endTime | simulation time steps |
 | @deltaT@ | run.deltaT | time step |
 | @writeInterval@ | run.writeInterval | write interval |
+| @pseudoCoNum@ | run.pseudoCoNum | pseudo Courant number |
+| @pseudoCoNumMax@ | run.pseudoCoNumMax | pseudo Courant number max |
+| @timeScheme@ | run.timeScheme | time scheme |
 | @CofRx/Y/Z@ | CofR.x/y/z | center of rotation |
 | @lRef@ / @Aref@ | reference.L_ref/A_ref | reference length/area |
 | @magUInf@ | flow.Uinf | freestream velocity magnitude |
@@ -143,7 +158,7 @@ assets/simpleFoam-adm-case-template/
 
 ---
 
-## fvOptions - actuatorDisk (cellZone 기반)
+## fvOptions - actuationDisk (cellZone 기반)
 
 
 ### OpenFOAM v2512 - actuationDiskSource 상세 매개변수
@@ -187,7 +202,7 @@ actuatorDisk
 - **의미**: incoming velocity를 측정할 위치 (m)
 - **계산**: `upstreamPoint = diskCenter + diskDir × 0.1 × radius + perpDir × 0.75 × radius`
 - **위치**: disk 바깥 upstream (flow 들어오는 쪽)
-- **설명**: diskDir는 **thrust direction**이자 **upstream 방향**. diskDir가 upstream을 가리키므로 `+diskDir`로 계산. diskDir = (-1,0,0)이면 upstreamPoint는 diskCenter보다 -X 쪽.
+- **설명**: diskDir는 **thrust direction**이자 **upstream 방향**. diskDir이 upstream을 가리키므로 `+diskDir`로 계산. diskDir = (-1,0,0)이면 upstreamPoint는 diskCenter보다 -X 쪽.
 - **disk center가 아님** — disk 바로 바깥에 위치해야 정확한 incoming velocity 측정
 
 ### U_perp (APC Ct/Cp lookup용)
@@ -252,15 +267,14 @@ actions
 1. template 복사 → mesh 복사 → placeholder 치환
 2. fvOptions **동적 생성** (cellZone mode, sink=true)
 3. **topoSet 실행** → cylinder cellSet → cellZone 생성
-4. decomposePar → mpirun simpleFoam -parallel → reconstructPar → cleanup
+4. decomposePar → mpirun hisa -parallel → reconstructPar → cleanup
 
 ---
 
 ## 발산 방지 설정
 - **kOmegaSST turbulence**: omegaMin 1e-10 포함
-- **relaxationFactors**: U=0.7, k=0.5, omega=0.5
-- **nNonOrthogonalCorrectors**: 3
-- **mpirun**: `--oversubscribe` 옵션 필수
+- **relaxationFactors**: `(k|omega|nuTilda)` → 0.5
+- **HiSA**: AUSMPlusUp flux scheme, pseudoTime (dualTimeStepping), GMRES + LUSGS
 
 ## 파라미터 테이블
 
@@ -272,20 +286,25 @@ actions
 | **ADM** | radius | 1 | disk 반지름 (m) |
 | **ADM** | Ct | 0.8 | 추력계수 (양수) |
 | **ADM** | Cp | 0.4 | 동력계수 (양수) |
-| **flow** | Uinf | 41.667 | freestream velocity (m/s) |
-| **flow** | AoA | 0.0 | angle of attack (deg) |
-| **flow** | AoS | 0.0 | angle of sideslip (deg) |
-| **flow** | upstreamX/Y/Z | auto | diskCenter + diskDir×0.1×radius + perp×0.75×radius (upstream: diskDir) |
+| flow | Uinf | 41.667 | freestream velocity (m/s) |
+| flow | AoA | 0.0 | angle of attack (deg) |
+| flow | AoS | 0.0 | angle of sideslip (deg) |
+| flow | upstreamX/Y/Z | auto | diskCenter + diskDir×0.1R + perp×0.75R |
 | fluid | rho | 1.225 | density (kg/m³) |
 | fluid | nu | 1.5e-5 | kinematic viscosity (m²/s) |
+| **thermodynamic** | T | 293.15 | temperature (K) |
+| **thermodynamic** | pInf | 101325 | freestream pressure (Pa) |
 | turbulence | model | kOmegaSST | RAS model |
 | turbulence | intensity | 0.01 | turbulence intensity |
 | turbulence | viscosityRatio | 10 | mu_t/nu ratio |
-| turbulence | lengthScale | 1.0 | length scale |
+| turbulence | lengthScale | 1.0 | length scale (고정) |
 | run | endTime | 1000 | simulation time steps |
 | run | deltaT | 1 | time step |
 | run | writeInterval | 100 | write interval |
-| reference | L_ref | 1.0 | reference length (omega = √k/(Cμ^0.25·L), hisa 스킬과 동일) |
+| run | pseudoCoNum | 1 | pseudo Courant number |
+| run | pseudoCoNumMax | 10000 | pseudo Courant number max |
+| run | timeScheme | steadyState | time scheme |
+| reference | L_ref | 1.0 | reference length (fixed) |
 | reference | A_ref | 1.0 | reference area |
 | CofR | x/y/z | 0.0 | center of rotation |
 | boundary | patch | ["far", "surface"] | patch names |
@@ -297,7 +316,7 @@ actions
 **diskDir is the direction of the thrust vector of the propeller.**
 
 - **의미**: disk normal vector = propeller가 추력을 발생하는 방향
-- **입력 방식**: user가 직접 입력 (normalize 필요)
+- **입력 방식**: user가 직접 입력 (normalize 필요, 스크립트가 자동)
 - **fvOptions**: `actuationDiskSource.diskDir`로 직접 전달
 - **thrust 방향**: sink=true일 때 diskDir 방향으로 추력 발생
 - **U_perp**: `Uinf_vector · diskDir` — 프로펠러가 실제로 느끼는 속도 (Ct/Cp lookup용)
@@ -315,11 +334,28 @@ Cp = 0.0267 (양수)
 
 ---
 
+## HiSA vs simpleFoam ADM 차이
+
+| 항목 | simpleFoam-adm | hisa-adm |
+|------|----------------|----------|
+| **Solver** | simpleFoam (incompressible) | HiSA (compressible) |
+| **Turbulence** | kOmegaSST | kOmegaSST (동일) |
+| **Flux Scheme** | upwind | AUSMPlusUp |
+| **Time Scheme** | steadyState (SIMPLE) | pseudoTime (dualTimeStepping) |
+| **Pressure Solver** | GAMG | GMRES + LUSGS |
+| **Thermodynamic** | 없음 | T, pInf, hePsiThermo |
+| **fvOptions** | actuationDiskSource | actuationDiskSource (동일) |
+| **topoSet** | cylinderToCell | cylinderToCell (동일) |
+| **ADM** | distributed force | distributed force (동일) |
+
+---
+
 ## 주요 특징
 - **actuatorDisk** ADM source term: distributed force 모델링 (Drone/비행기 프로펠러용)
+- **HiSA**: compressible, AUSMPlusUp, pseudoTime — 고속 공기역학
 - **parallel execution**: decomposePar → mpirun --oversubscribe → reconstructPar → cleanup
 - **kOmegaSST** turbulence: omegaMin 1e-10, relaxationFactors 자동 계산
-- **placeholder 기반**: 24개 placeholder 자동 치환
+- **placeholder 기반**: 30개 placeholder 자동 치환
 - **diskDir**: user 직접 입력 (normalize 포함), propeller thrust direction
 - **sink: true 강제**: Cp/Ct 양수 보장 (에러 방지)
 - **cylinder thickness**: diskDir × 0.1 × radius (cellZone cell 수 보장)
@@ -329,35 +365,42 @@ Cp = 0.0267 (양수)
 # 1. 파라미터 계산
 python3 calculate_adm_params.py
 
-# 2. simpleFoam ADM 실행
+# 2. HiSA ADM 실행
+python3 run_hisa_adm.py
 ```
 
-## 테스트 결과 (myShahed case, 2026-08-14)
-- **mesh**: 1,446,478 cells (checkMesh OK)
-- **topoSet**: actuatorDiskZone 10,876 cells
-- **parallel**: 16 cores (scotch decomposition)
-- **Cp/Ct**: 양수 유지 (Cp=0.0267, Ct=0.0877)
-- **sink**: true (추력 발생기)
-- **수렴**: Time=330까지 안정적 (residuals ~1e-7)
-- **추력 방향**: +X (Uinf direction)
-- **Cd/CmPitch**: Cd=0.0603, Cl=0.241, CmPitch=0.144
+## ⚠️ mpirun 실행 방식 수정 (2026-09-10)
 
----
-
-## ⚠️ mpirun 실행 방식 수정 (2026-09-09)
-
-**문제:** `mpirun ... 2>&1 | tee log.simpleFoam` — pipe buffer(64KB)가 가득 차면 mpirun이 write blocked → hang → gateway SIGKILL
+**문제:** `mpirun ... 2>&1 | tee log.hisa` — pipe buffer(64KB)가 가득 차면 mpirun이 write blocked → hang → gateway SIGKILL
 
 **수정 전:**
 ```bash
-mpirun -np N simpleFoam -parallel 2>&1 | tee log.simpleFoam
+mpirun -np N hisa -parallel 2>&1 | tee log.hisa
 ```
 
 **수정 후:**
 ```bash
-mpirun -np N --oversubscribe simpleFoam -parallel > log.simpleFoam 2>&1
+mpirun -np N --oversubscribe hisa -parallel > log.hisa 2>&1
 ```
 
 **원인:** `os.system()` + `tee` 파이프에서 Python이 pipe buffer를 읽지 않아 쌓임 → write blocked → hang → SIGKILL
+
 **해결:** `tee` 파이프 제거, 파일에 직접 redirect → pipe 없음, buffer 축적 없음
-**수정 파일:** `run_simpleFoam_adm.py` (mpirun 호출 부분)
+
+**세션 종결 시 mpirun 사망 방지:**
+```python
+proc = subprocess.Popen(cmd, shell=True, start_new_session=True)
+# poll loop: 5분마다 중간 보고, 종료까지 대기
+while proc.poll() is None:
+    time.sleep(1)
+```
+
+**원인:** openclaw/python 세션이 종료되면 mpirun이 SIGHUP 신호를 받아 에러 없이 조용히 종료
+
+**해결:**
+1. `setsid` — 새 session 생성, mpirun이 PID 1에 재부착 → 세션 종결과 독립
+2. `nohup` — SIGHUP 무시
+3. `Popen(start_new_session=True)` — python 프로세스도 새 session (중첩 안전장치)
+4. **poll loop** — 프로세스 종료까지 대기, 5분마다 log.hisa 마지막 3줄 중간 보고
+
+**수정 파일:** `run_hisa_adm.py` `run_parallel_hisa()` 함수

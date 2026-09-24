@@ -347,6 +347,7 @@ skills/snappyMesh-elliptic-tip-refine/
 - tip wake box는 refine ellipsoid와 겹칠 수 있으며, 더细한 refinement level이 우선 적용됩니다.
 
 ## 경계층 (addLayers) 안정화 설정 — 2026-09-21 업데이트
+
 (LE 포함 곡면)에서 addLayers 단계의 layer collapse를 막기 위해
 `snappyHexMeshDict`의 `addLayersControls` / `meshQualityControls` 및
 `castellatedMeshControls`를 수정했다. template에 반영된 내용:

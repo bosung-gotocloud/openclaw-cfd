@@ -73,14 +73,14 @@ relaxationFactors
 {
     fields
     {
-        p               0.1;
+        p               0.2;
     }
 
     equations
     {
-        U               0.3;
-        k               0.2;
-        omega           0.2;
+        U               0.5;
+        k               0.3;
+        omega           0.3;
     }
 }
 

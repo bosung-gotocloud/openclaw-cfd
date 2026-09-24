@@ -1,0 +1,50 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+|                                                                             |
+|    HiSA: High Speed Aerodynamic solver  (ADM extension)                     |
+|    Actuator Disk source for propeller / actuator disk thrust loading        |
+|                                                                             |
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fvOptions;
+}
+
+actuatorDisk
+{
+    type            actuationDiskSource;
+    active          on;
+
+    // ===== Selection =====
+    selectionMode     cellZone;
+    cellZone          actuatorDiskZone;
+
+    // ===== Actuator disk geometric properties =====
+    diskArea        @ADM_diskArea@;            // pi * radius^2
+
+    // disk normal vector = propeller thrust direction (user input + auto-normalize)
+    diskDir         (@ADM_diskDirX@ @ADM_diskDirY@ @ADM_diskDirZ@);
+
+    // disk centre
+    diskCentre      (@ADM_centerX@ @ADM_centerY@ @ADM_centerZ@);
+
+    // ===== Force method =====
+    variant         Froude;
+
+    // ===== Incoming velocity monitoring =====
+    monitorMethod   points;
+    upstreamPoint   (@ADM_upstreamPointX@ @ADM_upstreamPointY@ @ADM_upstreamPointZ@);  // upstream: diskDir direction, disk just outside
+
+    // ===== Thrust and Power Coefficients =====
+    Ct              constant @ADM_Ct@;
+    Cp              constant @ADM_Cp@;
+
+    // ===== Sink/Source flag (propeller thrust generator => sink = true) =====
+    sink            true;
+}
+
+// ************************************************************************* //

@@ -1,27 +1,29 @@
 #!/usr/bin/env python3
-"""run_simpleFoam_adm.py - simpleFoam ADM (Actuator Disk Model) solver workflow
+"""run_hisa_adm.py - HiSA (High Speed Aerodynamic) ADM solver workflow
 
-Workflow (per SKILL.md):
+HiSA (compressible, kOmegaSST, AUSMPlusUp, pseudoTime) + Actuator Disk Model.
+
+Workflow:
   1. JSON 파라미터 읽기 (adm_params.json 자동 검색)
   2. 템플릿 복사 + mesh 복사
-  3. Placeholder 치환 (adm_params 기반)
-  4. topoSet 실행 → cellZone 생성
-  5. decomposePar → mpirun simpleFoam -parallel → reconstructPar → cleanup
+  3. Placeholder 치환 (@Uvec@, @pInf@, @T@, @ADM_*@, @surfaceName@, etc.)
+  4. topoSet 실행 → cellZone 생성 (actuatorDiskZone)
+  5. decomposePar → mpirun hisa -parallel → reconstructPar → processor* cleanup
 
-diskDir is user input (normalize). upstreamPoint = diskCenter + diskDir×0.1R + perp×0.75R
+diskDir is user input (auto-normalized). upstreamPoint = diskCenter + diskDir x 0.1*radius
 """
 
 import json
 import sys
 import os
-import time
-import subprocess
 import shutil
 import re
 import math
+import subprocess
+import time
 from pathlib import Path
 
-TEMPLATE_DIR = Path("/home/bosung/.openclaw/workspace/skills/simpleFoam-adm/assets/simpleFoam-adm-case-template")
+TEMPLATE_DIR = Path("/home/bosung/.openclaw/workspace/skills/hisa-adm/templates")
 
 
 def read_json(path):
@@ -30,7 +32,7 @@ def read_json(path):
 
 
 def get_surface_name_from_mesh(case_dir):
-    """메쉬 boundary 파일에서 surface patch 이름 추출."""
+    """Mesh boundary file: extract surface patch name (exclude far/internal)."""
     boundary_file = os.path.join(case_dir, "constant", "polyMesh", "boundary")
     if not os.path.isfile(boundary_file):
         return 'surface'
@@ -44,7 +46,7 @@ def get_surface_name_from_mesh(case_dir):
 
 
 def create_output_dir(script_dir):
-    """case/ 서브디렉토리 + case.foam 파일 생성."""
+    """Create case/ subdir + case.foam file."""
     case_dir = os.path.join(script_dir, "case")
     os.makedirs(case_dir, exist_ok=True)
     foam_file = os.path.join(case_dir, "case.foam")
@@ -54,7 +56,7 @@ def create_output_dir(script_dir):
 
 
 def copy_template_and_mesh(case_dir, mesh_path):
-    """template 복사 + mesh 복사."""
+    """Copy template + mesh to case dir."""
     if not TEMPLATE_DIR.exists():
         raise FileNotFoundError(f"Template directory not found: {TEMPLATE_DIR}")
 
@@ -76,7 +78,7 @@ def copy_template_and_mesh(case_dir, mesh_path):
 
 
 def create_decomposePar_dict(case_dir, n_procs):
-    """decomposeParDict numberOfSubdomains 업데이트."""
+    """Update decomposeParDict numberOfSubdomains."""
     decompose_path = os.path.join(case_dir, "system", "decomposeParDict")
     with open(decompose_path, 'r') as f:
         content = f.read()
@@ -86,7 +88,7 @@ def create_decomposePar_dict(case_dir, n_procs):
 
 
 def replace_placeholders(case_dir, params):
-    """모든 placeholder 치환 (adm_params.json 기반)."""
+    """Replace all placeholders (ADM + HiSA compressible + flow + turbulence + run)."""
     surface_name = get_surface_name_from_mesh(case_dir)
 
     adm = params['ADM']
@@ -94,8 +96,9 @@ def replace_placeholders(case_dir, params):
     turb = params['turbulence']
     ref = params['reference']
     cofr = params['CofR']
+    thermo = params.get('thermodynamic', {"T": 293.15, "pInf": 101325})
 
-    # diskDir: user 입력, 자동 normalize
+    # diskDir: user input, auto-normalize
     diskDir_x = adm.get('diskDirX', 1.0)
     diskDir_y = adm.get('diskDirY', 0.0)
     diskDir_z = adm.get('diskDirZ', 0.0)
@@ -105,15 +108,12 @@ def replace_placeholders(case_dir, params):
     diskDir_z /= mag
 
     # upstreamPoint: 0.1R in diskDir + 0.75R perpendicular to disk
-    # (perp = cross(diskDir, (0,1,0)) if not parallel, else cross(diskDir, (1,0,0)))
     dx, dy, dz = diskDir_x, diskDir_y, diskDir_z
     if abs(dy) < 0.99:
         px, py, pz = 0.0, 1.0, 0.0
     else:
         px, py, pz = 1.0, 0.0, 0.0
-    cx = dy*pz - dz*py
-    cy = dz*px - dx*pz
-    cz = dx*py - dy*px
+    cx = dy*pz - dz*py; cy = dz*px - dx*pz; cz = dx*py - dy*px
     cn = math.sqrt(cx*cx + cy*cy + cz*cz)
     cx, cy, cz = cx/cn, cy/cn, cz/cn
     off_disk = adm['radius'] * 0.1
@@ -121,6 +121,8 @@ def replace_placeholders(case_dir, params):
     upstream_x = adm['centerX'] + dx*off_disk + cx*off_perp
     upstream_y = adm['centerY'] + dy*off_disk + cy*off_perp
     upstream_z = adm['centerZ'] + dz*off_disk + cz*off_perp
+
+    # disk thickness = 10% of radius (for topoSet cylinder)
     disk_thickness = adm['radius'] * 0.1
 
     placeholders = {
@@ -146,10 +148,19 @@ def replace_placeholders(case_dir, params):
         # Flow
         '@Uvec@': f"({flow['Ux']} {flow['Uy']} {flow['Uz']})",
         '@Uinf@': f"{flow['Uinf']}",
+        '@Ux@': f"{flow['Ux']}",
+        '@Uy@': f"{flow['Uy']}",
+        '@Uz@': f"{flow['Uz']}",
+
+        # HiSA compressible (thermodynamic)
+        '@pInf@': f"{thermo['pInf']}",
+        '@T@': f"{thermo['T']}",
 
         # Turbulence
         '@kIni@': f"{turb['k_ini']}",
         '@omegaIni@': f"{turb['omega_ini']}",
+        '@intensity@': f"{turb['intensity']}",
+        '@mixingLength@': f"{turb['lengthScale']}",
 
         # Fluid
         '@nu@': f"{params['fluid']['nu']}",
@@ -160,6 +171,9 @@ def replace_placeholders(case_dir, params):
         '@endTime@': f"{params['run']['endTime']}",
         '@deltaT@': f"{params['run']['deltaT']}",
         '@writeInterval@': f"{params['run']['writeInterval']}",
+        '@pseudoCoNum@': f"{params['run']['pseudoCoNum']}",
+        '@pseudoCoNumMax@': f"{params['run']['pseudoCoNumMax']}",
+        '@timeScheme@': f"{params['run']['timeScheme']}",
 
         # Reference
         '@CofRx@': f"{cofr['x']}",
@@ -196,64 +210,79 @@ def replace_placeholders(case_dir, params):
                 continue
 
 
-def run_parallel_simpleFoam(case_dir, n_procs, params):
-    """simpleFoam parallel 실행."""
-    print(f"\n  === Parallel simpleFoam ({n_procs} procs) ===")
+def run_parallel_hisa(case_dir, n_procs, params):
+    """HiSA parallel execution: topoSet → decomposePar → mpirun hisa -parallel → reconstructPar → cleanup.
 
-    # 0. topoSet 실행 (cellZone 생성)
+    2026-09-10: mpirun detached with setsid + nohup, poll loop to wait.
+    - mpirun survives even if openclaw/python session ends (new session, reparented to PID 1)
+    - stdout/stderr → log.hisa direct redirect (no pipe → SIGKILL/OOM prevention)
+    - poll loop waits for process end, then checks exit code
+    """
+    print(f"\n  === Parallel HiSA ADM ({n_procs} procs) ===")
+
+    # 0. topoSet (cellZone creation)
     topo_config = params.get('topoSet', {})
     topo_enabled = topo_config.get('enabled', True)
     if topo_enabled:
         topoDict_path = os.path.join(case_dir, "system", "topoSetDict")
         if os.path.isfile(topoDict_path):
-            print(f"  [0/5] topoSet (cellZone 생성)...")
+            print(f"  [0/5] topoSet (cellZone creation)...")
             cmd = (f"bash -c 'source /opt/OpenFOAM/OpenFOAM-v2512/etc/bashrc && "
-                   f"cd {case_dir} && topoSet 2>&1 | tee log.topoSet'")
+                   f"cd {case_dir} && topoSet > log.topoSet 2>&1'")
             ret = os.system(cmd)
             if ret != 0:
                 print("  ERROR: topoSet failed.")
+                try:
+                    with open(os.path.join(case_dir, 'log.topoSet'), 'r') as f:
+                        print(f.read())
+                except Exception:
+                    pass
                 return ret
         else:
             print(f"  WARNING: topoSetDict not found at {topoDict_path}, skipping topoSet")
-    
+
     # 1. decomposePar
     print(f"  [1/5] decomposePar...")
     cmd = (f"bash -c 'source /opt/OpenFOAM/OpenFOAM-v2512/etc/bashrc && "
-           f"cd {case_dir} && decomposePar -force 2>&1 | tee log.decomposePar'")
+           f"cd {case_dir} && decomposePar -force > log.decomposePar 2>&1'")
     ret = os.system(cmd)
     if ret != 0:
         print("  ERROR: decomposePar failed.")
         return ret
 
-    # 2. parallel simpleFoam — 2026-09-10: setsid+nohup detach, poll loop 대기
-    print(f"  [2/5] mpirun simpleFoam -parallel ({n_procs} procs)...")
+    # 2. parallel hisa — setsid+nohup detach, poll loop
+    print(f"  [2/5] mpirun hisa -parallel ({n_procs} procs)...")
     case_dir_abs = os.path.abspath(case_dir)
-    cmd = (f"bash -c 'source /opt/OpenFOAM/OpenFOAM-v2512/etc/bashrc && "
-           f"cd {case_dir_abs} && "
-           f"setsid nohup mpirun -np {n_procs} --oversubscribe simpleFoam -parallel "
-           f"> log.simpleFoam 2>&1'")
+    cmd = (
+        f"bash -c 'source /opt/OpenFOAM/OpenFOAM-v2512/etc/bashrc && "
+        f"cd {case_dir_abs} && "
+        f"setsid nohup mpirun -np {n_procs} --oversubscribe hisa -parallel "
+        f"> log.hisa 2>&1'"
+    )
     proc = subprocess.Popen(cmd, shell=True, start_new_session=True)
     last_poll = time.time()
     while proc.poll() is None:
         time.sleep(1)
         if time.time() - last_poll >= 300:
             try:
-                with open(os.path.join(case_dir, 'log.simpleFoam'), 'r') as f:
+                with open(os.path.join(case_dir, 'log.hisa'), 'r') as f:
                     lines = f.readlines()
-                print(f"  [simpleFoam] Running... (last 3 lines)\n" + '\n'.join(lines[-3:]))
+                print(f"  [HiSA] Running... (last 3 lines)\n" + '\n'.join(lines[-3:]))
             except (FileNotFoundError, IOError):
-                print(f"  [simpleFoam] Running...")
+                print(f"  [HiSA] Running...")
             last_poll = time.time()
     ret = proc.returncode
 
-    # 3. reconstructPar
+    # 3. reconstructPar — only if hisa succeeded
     if ret == 0:
         print(f"  [3/5] reconstructPar...")
         cmd = (f"bash -c 'source /opt/OpenFOAM/OpenFOAM-v2512/etc/bashrc && "
-               f"cd {case_dir} && reconstructPar 2>&1 | tee log.reconstructPar'")
+               f"cd {case_dir} && reconstructPar > log.reconstructPar 2>&1'")
         ret = os.system(cmd)
+    else:
+        print(f"  [3/5] reconstructPar SKIPPED (hisa failed, exit={ret})")
 
-    # 4. processor directories 제거
+    # 4. Cleanup processor* directories
     print(f"  [4/5] Cleanup processor* directories...")
     for item in os.listdir(case_dir):
         if item.startswith('processor'):
@@ -269,9 +298,8 @@ def main():
 
     args = sys.argv[1:]
 
-    # JSON 자동 검색
+    # Auto-detect JSON
     json_path = None
-    search_paths = ["adm_params.json"]
     if len(args) >= 1:
         json_path = args[0]
     else:
@@ -284,10 +312,29 @@ def main():
         print(f"  Run: python3 calculate_adm_params.py")
         sys.exit(1)
 
-    print(f"\n=== simpleFoam ADM Workflow Start ===")
+    print(f"\n=== HiSA ADM Workflow Start ===")
     print(f"  Script dir: {script_dir}")
     print(f"  JSON: {json_path}")
     params = read_json(json_path)
+
+    # --- AoA & AoS Velocity Calculation (same as run_hisa.py) ---
+    flow = params['flow']
+    u_inf = flow['Uinf']
+    aoa_rad = math.radians(flow.get('AoA', 0))
+    aos_rad = math.radians(flow.get('AoS', 0))
+    flow['Ux'] = u_inf * math.cos(aoa_rad) * math.cos(aos_rad)
+    flow['Uy'] = u_inf * math.sin(aos_rad)
+    flow['Uz'] = u_inf * math.cos(aoa_rad) * math.sin(aos_rad)
+
+    # --- Turbulence k/omega Calculation (same as run_hisa.py) ---
+    turb = params['turbulence']
+    if 'k_ini' not in turb:
+        I = turb.get('intensity', 0.01)
+        turb['k_ini'] = 1.5 * (I * u_inf) ** 2
+    if 'omega_ini' not in turb:
+        Cmu = 0.09
+        L = turb.get('lengthScale', 1.0)
+        turb['omega_ini'] = math.sqrt(turb['k_ini']) / (Cmu ** 0.25) / L
 
     adm = params['ADM']
     output_dir = params.get('output_dir', script_dir)
@@ -297,11 +344,11 @@ def main():
     case_dir = create_output_dir(output_dir)
     mesh_path = params.get('meshPath', '')
 
-    # 1. copy template
+    # 1. copy template + mesh
     print(f"\n  Copying templates to {case_dir}...")
     copy_template_and_mesh(case_dir, mesh_path)
 
-    # 2. replace placeholders (all: ADM, flow, turbulence, upstreamPoint, topoSet, etc.)
+    # 2. replace placeholders (all: ADM, HiSA compressible, flow, turbulence, upstreamPoint, topoSet)
     print(f"  Replacing placeholders...")
     replace_placeholders(case_dir, params)
 
@@ -313,28 +360,25 @@ def main():
     diskDir_x /= mag
     diskDir_y /= mag
     diskDir_z /= mag
-    # upstreamPoint: 0.1R in diskDir + 0.75R perpendicular to disk
-    dx, dy, dz = diskDir_x, diskDir_y, diskDir_z
-    if abs(dy) < 0.99:
-        px, py, pz = 0.0, 1.0, 0.0
-    else:
-        px, py, pz = 1.0, 0.0, 0.0
-    cx = dy*pz - dz*py
-    cy = dz*px - dx*pz
-    cz = dx*py - dy*px
-    cn = math.sqrt(cx*cx + cy*cy + cz*cz)
-    cx, cy, cz = cx/cn, cy/cn, cz/cn
-    off_disk = adm['radius'] * 0.1
-    off_perp = adm['radius'] * 0.75
-    upstream_x = adm['centerX'] + dx*off_disk + cx*off_perp
-    upstream_y = adm['centerY'] + dy*off_disk + cy*off_perp
-    upstream_z = adm['centerZ'] + dz*off_disk + cz*off_perp
+    r = adm['radius']
+    off_along = r * 0.1
+    off_perp  = r * 0.75
+    ref_x, ref_y, ref_z = 0.0, 1.0, 0.0
+    if abs(diskDir_x*ref_x + diskDir_y*ref_y + diskDir_z*ref_z) > 0.9:
+        ref_x, ref_y, ref_z = 1.0, 0.0, 0.0
+    px = diskDir_y*ref_z - diskDir_z*ref_y
+    py = diskDir_z*ref_x - diskDir_x*ref_z
+    pz = diskDir_x*ref_y - diskDir_y*ref_x
+    pn = math.sqrt(px*px + py*py + pz*pz)
+    px, py, pz = px/pn, py/pn, pz/pn
+    upstream_x = adm['centerX'] + diskDir_x*off_along + px*off_perp
+    upstream_y = adm['centerY'] + diskDir_y*off_along + py*off_perp
+    upstream_z = adm['centerZ'] + diskDir_z*off_along + pz*off_perp
 
     print(f"\n  === ADM Parameters ===")
     print(f"  Disk center: ({adm['centerX']}, {adm['centerY']}, {adm['centerZ']}) m")
     print(f"  diskDir (thrust direction): ({diskDir_x:.6f}, {diskDir_y:.6f}, {diskDir_z:.6f}) [user input, auto-normalized]")
-    print(f"  upstreamPoint: ({upstream_x:.8f}, {upstream_y:.8f}, {upstream_z:.8f}) m  [upstream: diskDir direction, incoming velocity 측정]")
-    print(f"    (disk center + diskDir × {off_disk:.6f} + perp × {off_perp:.6f})")
+    print(f"  upstreamPoint: ({upstream_x:.8f}, {upstream_y:.8f}, {upstream_z:.8f}) m  [upstream: diskDir direction, incoming velocity measurement]")
     print(f"  Disk radius: {adm['radius']:.4f} m")
     print(f"  Ct: {adm['Ct']:.4f}, Cp: {adm['Cp']:.4f}")
 
@@ -343,13 +387,16 @@ def main():
     print(f"  U = ({flow['Ux']:.6f}, {flow['Uy']:.6f}, {flow['Uz']:.6f})")
     print(f"  k={params['turbulence']['k_ini']:.8e}, omega={params['turbulence']['omega_ini']:.4f}")
 
+    thermo = params.get('thermodynamic', {"T": 293.15, "pInf": 101325})
+    print(f"  T={thermo['T']:.2f} K, pInf={thermo['pInf']:.2f} Pa")
+
     # 3. parallel execution
     n_procs = params.get('num_procs', 1)
     if n_procs < 1:
         n_procs = 1
 
     create_decomposePar_dict(case_dir, n_procs)
-    ret = run_parallel_simpleFoam(case_dir, n_procs, params)
+    ret = run_parallel_hisa(case_dir, n_procs, params)
 
     if ret == 0:
         print(f"\n=== PARALLEL SUCCESS ===")

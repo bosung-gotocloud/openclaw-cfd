@@ -1,0 +1,43 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+|                                                                             |
+|    HiSA: High Speed Aerodynamic solver  (ADM extension)                     |
+|    Actuator disk cellZone via short cylinder (cylinderToCell)               |
+|                                                                             |
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      topoSetDict;
+}
+
+actions
+(
+    {
+        name        actuatorDiskCellSet;
+        type        cellSet;
+        action      new;
+        source      cylinderToCell;
+        sourceInfo
+        {
+            p1      (@ADM_centerX@ @ADM_centerY@ @ADM_centerZ@);
+            p2      (@ADM_centre2X@ @ADM_centre2Y@ @ADM_centre2Z@);
+            radius  @ADM_cylinderRadius@;
+        }
+    }
+    {
+        name        actuatorDiskZone;
+        type        cellZoneSet;
+        action      new;
+        source      setToCellZone;
+        sourceInfo
+        {
+            set     actuatorDiskCellSet;
+        }
+    }
+);
+
+// ************************************************************************* //

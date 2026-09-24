@@ -1,0 +1,29 @@
+FoamFile
+{
+ version 2.0;
+ format ascii;
+ class volScalarField;
+ location 0;
+ object T;
+}
+#include        "include/freestreamConditions"
+
+dimensions [0 0 0 1 0 0 0];
+
+internalField uniform     @T@ ;
+
+
+boundaryField
+{
+  far
+  {
+        type            characteristicFarfieldTemperature;
+        #include        "include/freestreamConditions"
+        value           $internalField;
+  }
+  @surfaceName@
+  {
+        type            characteristicWallTemperature;
+        value           $internalField;
+  }
+}
