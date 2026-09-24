@@ -124,7 +124,7 @@ assets/simpleFoam-adm-case-template/
 | @ADM_Ct@ | ADM.Ct | 추력계수 |
 | @ADM_Cp@ | ADM.Cp | 동력계수 |
 | @ADM_upstreamPointX/Y/Z@ | derived | diskCenter + diskDir×0.1×radius + perp×0.75×radius (upstream: diskDir) |
-| @ADM_centre2X/Y/Z@ | derived | center + diskDir × 0.1 × radius |
+| @ADM_centre2X/Y/Z@ | derived | center + diskDir × 0.005 |
 | @ADM_cylinderRadius@ | derived | radius × 1.05 |
 | @Uvec@ | flow.Ux/Y/Z | freestream velocity vector |
 | @Uinf@ | flow.Uinf | freestream velocity magnitude |
@@ -219,7 +219,7 @@ actions
         sourceInfo
         {
             p1      (x y z);     // disk center
-            p2      (x y z);     // center + diskDir × 0.1 × radius
+            p2      (x y z);     // center + diskDir × 0.005
             radius  <value>;      // radius × 1.05
         }
     }
@@ -240,11 +240,11 @@ actions
 | 파라미터 | 값 | 설명 |
 |--|--|--|
 | **p1** | `diskCenter (X, Y, Z)` | cylinder 시작점 = disk 중심 |
-| **p2** | `diskCenter + diskDir × 0.1 × radius` | cylinder 끝점 (very short cylinder) |
+| **p2** | `diskCenter + diskDir × 0.005` | cylinder 끝점 (very short cylinder) |
 | **radius** | `ADM.radius × 1.05` | 프로펠러 반지름의 105% |
 
-### cylinder 두께 (0.1 × radius) 의미
-- p1과 p2의 거리 = `0.1 × radius` (diskDir는 normalize됨)
+### cylinder 두께 0.005m 의미
+- p1과 p2의 거리 = `|diskDir| × 0.005 = 0.005m` (diskDir는 normalize됨)
 - disk가 매우 얇은 원반임을 반영
 - **반드시 p1 ≠ p2**: 동간이면 cylinder thickness=0 → cellZone cell 수 부족 → 오류
 
@@ -322,7 +322,7 @@ Cp = 0.0267 (양수)
 - **placeholder 기반**: 24개 placeholder 자동 치환
 - **diskDir**: user 직접 입력 (normalize 포함), propeller thrust direction
 - **sink: true 강제**: Cp/Ct 양수 보장 (에러 방지)
-- **cylinder thickness**: diskDir × 0.1 × radius (cellZone cell 수 보장)
+- **cylinder thickness**: diskDir × 0.005 (cellZone cell 수 보장)
 
 ## 사용 방법
 ```bash

@@ -70,32 +70,61 @@ speed_mph = 49.81 / 0.44704 = 111.4 mph → APC DB lookup
 
 ---
 
-## 워크플로우
+## ✅ 필수 실행 절차 (매번 순서대로!)
 
-### 1. 파라미터 계산
+### Step 1: 스크립트 복사
 ```bash
-python3 calculate_adm_params.py
+cp ~/.openclaw/workspace/skills/hisa-adm/scripts/calculate_adm_params.py <실행 디렉토리>
+cp ~/.openclaw/workspace/skills/hisa-adm/scripts/run_hisa_adm.py <실행 디렉토리>
 ```
-- **mandatory**: `mesh_path`, `disk center(X,Y,Z)`, `disk radius`
-- **diskDir**: **user 직접 입력** (normalize 포함)
-- **upstreamPoint**: `diskCenter + diskDir×0.1×radius + perp×0.75×radius` (perp = cross(diskDir, (0,1,0)) if not parallel, else cross(diskDir, (1,0,0)))
-- **프로펠러 정보 (선택)**: diameter(inch), pitch(inch), RPM → **APC DB 자동 조회** → Ct/Cp 자동 적용
-- JSON → 출력 → 표시 → **승인 필수**
 
-### 2. HiSA ADM parallel 실행
+### Step 2: 파라미터 계산 (interactive, ADM 포함)
 ```bash
-python3 run_hisa_adm.py
+cd <실행 디렉토리>
+python3 calculate_adm_params.py
+# → mesh_path 입력 요청 → mesh 경로 입력
+```
+- **mandatory**: `mesh_path`, `disk center(X,Y,Z)`, `disk radius`, `diskDir`
+- **diskDir**: **user 직접 입력** (스크립트 자동 normalize)
+- **Uinf, AoA, AoS**: user 직접 입력 → Uinf vector 자동 계산
+- **upstreamPoint**: `diskCenter + diskDir×0.1×radius` (upstream: diskDir direction, incoming velocity 측정용)
+- **프로펠러 정보 (선택)**: diameter(inch), pitch(inch), RPM → **APC DB 자동 조회** → Ct/Cp 자동 적용
+- `adm_params.json` 생성
+
+### Step 3: JSON 출력 및 승인 대기
+- `adm_params.json`이 생성됨
+- **파라미터 표시 후 승인 필수** — 승인 전 실행 절대 불가!
+
+### Step 4: HiSA ADM parallel 해석 실행 (승인 후)
+```bash
+cd <실행 디렉토리>
+nohup python3 run_hisa_adm.py > log.hisa 2>&1 &
 ```
 - JSON 자동 검색: `adm_params.json` (실행 디렉토리 기준)
 - 무조건 parallel 실행 (decomposePar → mpirun --oversubscribe hisa -parallel → reconstructPar → processor* cleanup)
 - 로그 파일명: `log.hisa`
 - case 폴더 생성 후 `case/` + `case.foam` 파일 자동 생성
 
+**⚠️ 절대 금지:** `| head`, `| tail -N` 등 출력 제한 명령어 — 솔버 죽임!
+
 ## 워크플로우 규칙
 - **reconstructPar / processor cleanup**: hisa exit=0일 때만 실행. background launch에서는 exit code를 직접 확인 후 수동 reconstructPar 필요
 - **output_dir**: 실행 디렉토리 (AI가 대화로 판단)
 - **mesh_path**: 메쉬 polyMesh 디렉토리
 - **파라미터 계산 후 승인 필수**: 승인 전에 실행하지 않음
+
+## ⏱️ 실행 시간 가이드 (exec timeout)
+
+HiSA ADM 해석은 **수 분 ~ 수 시간** 소요. `exec` 호출 시 다음 규칙 적용:
+
+| 작업 | exec 설정 |
+|------|-----------|
+| `calculate_adm_params.py` (파라미터 계산) | `timeoutSeconds: 120` (빠름) |
+| `run_hisa_adm.py` (해석) | **`background: true` + `yieldMs: 60000`** — 1분 후 백그라운드로, `process`로 상태 확인 |
+| `reconstructPar` (재구성) | `timeoutSeconds: 600` (메쉬 크기에 따라) |
+
+- `background: true`로 즉시 백그라운드로 → 세션 블로킹 방지
+- `process(action=poll)`로 진행 상황 확인, 완료 시 `process(action=log)`로 로그 확인
 
 ## 템플릿 구조
 ```
@@ -132,7 +161,7 @@ templates/
 | @ADM_Ct@ | ADM.Ct | 추력계수 |
 | @ADM_Cp@ | ADM.Cp | 동력계수 |
 | @ADM_upstreamPointX/Y/Z@ | derived | diskCenter + diskDir×0.1R + perp×0.75R |
-| @ADM_centre2X/Y/Z@ | derived | center + diskDir × 0.1 × radius |
+| @ADM_centre2X/Y/Z@ | derived | center + diskDir × 0.05 × radius |
 | @ADM_cylinderRadius@ | derived | radius × 1.05 |
 | @Uvec@ | flow.Ux/Y/Z | freestream velocity vector |
 | @Uinf@ | flow.Uinf | freestream velocity magnitude |
@@ -234,7 +263,7 @@ actions
         sourceInfo
         {
             p1      (x y z);     // disk center
-            p2      (x y z);     // center + diskDir × 0.1 × radius
+            p2      (x y z);     // center + diskDir × 0.05 × radius
             radius  <value>;      // radius × 1.05
         }
     }
@@ -255,11 +284,11 @@ actions
 | 파라미터 | 값 | 설명 |
 |--|--|--|
 | **p1** | `diskCenter (X, Y, Z)` | cylinder 시작점 = disk 중심 |
-| **p2** | `diskCenter + diskDir × 0.1 × radius` | cylinder 끝점 (very short cylinder) |
+| **p2** | `diskCenter + diskDir × 0.05 × radius` | cylinder 끝점 (very short cylinder) |
 | **radius** | `ADM.radius × 1.05` | 프로펠러 반지름의 105% |
 
-### cylinder 두께 (0.1 × radius) 의미
-- p1과 p2의 거리 = `0.1 × radius` (diskDir는 normalize됨)
+### cylinder 두께 (0.05 × radius) 의미
+- p1과 p2의 거리 = `0.05 × radius` (diskDir는 normalize됨)
 - disk가 매우 얇은 원반임을 반영
 - **반드시 p1 ≠ p2**: 동간이면 cylinder thickness=0 → cellZone cell 수 부족 → 오류
 
@@ -358,7 +387,7 @@ Cp = 0.0267 (양수)
 - **placeholder 기반**: 30개 placeholder 자동 치환
 - **diskDir**: user 직접 입력 (normalize 포함), propeller thrust direction
 - **sink: true 강제**: Cp/Ct 양수 보장 (에러 방지)
-- **cylinder thickness**: diskDir × 0.1 × radius (cellZone cell 수 보장)
+- **cylinder thickness**: diskDir × 0.05 × radius (cellZone cell 수 보장)
 
 ## 사용 방법
 ```bash

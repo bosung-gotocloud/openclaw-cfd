@@ -374,8 +374,8 @@ def main():
 
     print("\n--- ADM Derived ---")
     print("  upstreamPoint: ({:.6f}, {:.6f}, {:.6f}) m  [upstream: diskDir direction, incoming velocity measurement]".format(upstream_x, upstream_y, upstream_z))
-    print("    (disk center + diskDir x {:.6f})  [upstream: diskDir direction]".format(epsilon))
-    print("  epsilon: {:.6f} m (radius x 0.1)".format(epsilon))
+    print("    (disk center + diskDir x {:.6f})  [upstream: diskDir direction]".format(off_disk))
+    print("  off_disk: {:.6f} m (radius x 0.1)".format(off_disk))
 
     print("\n--- Turbulence ---")
     print("  Model:   {}".format(params['turbulence']['model']))
