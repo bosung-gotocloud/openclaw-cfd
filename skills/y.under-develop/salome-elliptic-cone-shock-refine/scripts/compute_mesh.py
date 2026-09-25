@@ -117,7 +117,7 @@ def write_patch_field(dirname, fname, field_type, patch_names, patch_nfaces, int
         f.write('    object      %s;\n' % fname)
         f.write("}\n\n")
         f.write("internalField uniform %s;\n\n" % str(internal_value))
-        f.write("boundaryField\n\n(\n")
+        f.write("boundaryField\n{\n")
         for i, pname in enumerate(patch_names):
             nf = patch_nfaces[i]
             f.write("    %s\n" % pname)
@@ -128,7 +128,7 @@ def write_patch_field(dirname, fname, field_type, patch_names, patch_nfaces, int
             else:
                 f.write("        value           uniform (0 0 0);\n")
             f.write("    }\n\n")
-        f.write(")\n")
+        f.write("}\n")
 
 
 def exportToFoam(mesh, dirname, base_name):

@@ -109,6 +109,9 @@ Viscous boundary layers are handled **by snappyHexMesh addLayers** (NOT Netgen V
 ### No Netgen ViscousLayers
 The base mesh (without BL) is generated entirely by SALOME Netgen. Boundary layers are added by snappyHexMesh on top of the pre-computed mesh.
 
+### 0/p, 0/U boundaryField format (2026-09-25 fix)
+`compute_mesh.py`'s `write_patch_field()` writes `boundaryField` as a **dictionary of sub-dictionaries** (`{ patch { ... } ... }`), **not** a list (`( patch { ... } ... )`). Writing it as a list causes `decomposePar` to fail with `FOAM FATAL ERROR: attempt to return primitive entry 'boundaryField' as a sub-dictionary` when it tries to read the field. Always use `{` / `}` for the outer boundaryField block.
+
 ## File Structure (Output)
 
 ```

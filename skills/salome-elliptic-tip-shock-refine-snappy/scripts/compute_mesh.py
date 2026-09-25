@@ -126,7 +126,7 @@ def write_patch_field(dirname, fname, field_type, patch_names, patch_nfaces, int
         else:
             f.write("dimensions      [0 1 -2 0 0 0 0];\n\n")
         f.write("internalField uniform %s;\n\n" % str(internal_value))
-        f.write("boundaryField\n\n(\n")
+        f.write("boundaryField\n{\n")
         for i, pname in enumerate(patch_names):
             nf = patch_nfaces[i]
             f.write("    %s\n" % pname)
@@ -137,8 +137,7 @@ def write_patch_field(dirname, fname, field_type, patch_names, patch_nfaces, int
             else:
                 f.write("        value           uniform (0 0 0);\n")
             f.write("    }\n\n")
-        f.write(");\n")
-
+        f.write("}\n")
 
 def exportToFoam(mesh, dirname, base_name):
     """Export SALOME mesh to complete OpenFOAM case structure."""
@@ -201,7 +200,7 @@ def exportToFoam(mesh, dirname, base_name):
         pts = mesh.GetElementsByType(SMESH.NODE)
         f.write(f"{len(pts)}\n(\n")
         for ni in pts: f.write(f"\t({ ' '.join(map(str, mesh.GetNodeXYZ(ni))) })\n")
-        f.write(")\n")
+        f.write("}\n")
 
     with open(os.path.join(dirname, 'faces'), 'w') as f:
         write_header(f, "faceList")
