@@ -126,7 +126,7 @@ def write_patch_field(dirname, fname, field_type, patch_names, patch_nfaces, int
         else:
             f.write("dimensions      [0 1 -2 0 0 0 0];\n\n")
         f.write("internalField uniform %s;\n\n" % str(internal_value))
-        f.write("boundaryField\n{\n")
+        f.write("boundaryField\n\n{\n")
         for i, pname in enumerate(patch_names):
             nf = patch_nfaces[i]
             f.write("    %s\n" % pname)

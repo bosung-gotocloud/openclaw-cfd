@@ -20,7 +20,7 @@ SALOME-based two-step batch mesh generation for OpenFOAM. Adds **tip-wake line r
 
 ## ⚠️ Critical: Viscous Layers in SALOME
 
-Viscous layers are configured **inside** `compute_mesh.py` via `netgen.ViscousLayers(h1, layers, growth, far_faces, 1, smeshBuilder.FACE_OFFSET)`.
+Viscous layers are configured **inside** `compute_mesh.py` via `netgen.ViscousLayers(T, layers, growth, far_faces, 1, smeshBuilder.FACE_OFFSET) — 1st arg is total BL thickness T = h1×(growth^layers-1)/(growth-1), not first-layer height`.
 No separate snappyHexMesh layer config needed.
 
 ## ⚠️ Critical: min_size Auto-Correction
@@ -91,7 +91,7 @@ compute_mesh.py            (Stage 2)
     ├─ **Wake line domain clipping**: `geompy.MakeCut(wake_line, domain)` 으로 domain 밖으로 뚫고 나가는 부분 clip
     ├─ **min_size auto-correction**: STEP에서 가장 작은 face edge length을 계산. `min_size > smallest_edge` 면 `args['min_size'] = smallest_edge`로 조정 (Netgen이 face meshing 못 하는 것 방지)
     ├─ Netgen mesh: SetUseSurfaceCurvature(1)
-    ├─ **ViscousLayers(h1=0.0001, layers=10, growth=1.3, far_faces, NODE_OFFSET)** — BOUNDARY LAYERS
+    ├─ **ViscousLayers(T, layers=10, growth=1.3, far_faces)** — BOUNDARY LAYERS (1st arg = total BL thickness)
     ├─ Mesh compute (no timeout)
     ├─ **exportToFoam: generates complete case structure**
     │   ├─ constant/polyMesh/  (points, faces, owner, neighbour, boundary, cellZones)

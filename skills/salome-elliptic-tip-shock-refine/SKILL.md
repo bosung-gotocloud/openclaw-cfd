@@ -52,7 +52,7 @@ SALOME Netgen 기반 **충격파(Shock) 포인트 로컬 사이즈 정밀화**�
 `SetUseSurfaceCurvature(1)` **MUST be enabled** for stable STEP mesh computation.
 
 ### Viscous Layers in SALOME
-Viscous layers are configured **inside** `compute_mesh.py` via `netgen.ViscousLayers(h1, layers, growth, far_faces, 1, smeshBuilder.FACE_OFFSET)`.
+Viscous layers are configured **inside** `compute_mesh.py` via `netgen.ViscousLayers(T, layers, growth, far_faces, 1, smeshBuilder.FACE_OFFSET) — 1st arg is total BL thickness T = h1×(growth^layers-1)/(growth-1), not first-layer height`.
 No separate snappyHexMesh layer config needed.
 
 ### min_size Auto-Correction
@@ -103,7 +103,7 @@ compute_mesh.py            (Stage 2)
     ├─ **Apply local size to shock vertices** ← NEW
     ├─ **min_size auto-correction** ← NEW
     ├─ Netgen mesh: SetUseSurfaceCurvature(1)
-    ├─ **ViscousLayers(h1=0.0001, layers=10, growth=1.3)** — BOUNDARY LAYERS
+    ├─ **ViscousLayers(T, layers=10, growth=1.3)** — BOUNDARY LAYERS (1st arg = total BL thickness)
     ├─ Mesh compute (no timeout)
     ├─ **exportToFoam: generates complete case structure**
     │   ├─ constant/polyMesh/  (points, faces, owner, neighbour, boundary, cellZones)

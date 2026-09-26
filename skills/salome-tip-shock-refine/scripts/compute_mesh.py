@@ -699,7 +699,7 @@ def run_compute_mesh():
     mesh.GroupOnGeom(group_model, f'{base_name}_surface', SMESH.FACE)
 
     print(f"  Configuring viscous layers: {layers} layers, growth {growth}, firstLayerHeight {h1:.6f} m")
-    netgen.ViscousLayers(h1, layers, growth, far_faces, 1, smeshBuilder.FACE_OFFSET)
+    netgen.ViscousLayers(T, layers, growth, far_faces, 1, smeshBuilder.FACE_OFFSET)
 
     if wake_line_objects:
         print(f"  Applying Netgen local size to {len(wake_line_objects)} wake lines: {tip_wake_refine_size:.6f} m (Step 5: surf_size * 2)")
